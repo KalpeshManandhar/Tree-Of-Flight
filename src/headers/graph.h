@@ -16,8 +16,7 @@ struct GraphNode{
     T data;
     uint32_t id;
     // placeholder values for operations
-    uint32_t value;
-    uint32_t visited=0;
+    void *values;
     // list of neighbours
     LinkedList<GraphEdge<T>> neighbours;
 };
@@ -30,7 +29,6 @@ GraphNode<T> * newGraphNode(T data){
     newnode->data = data;
     newnode->id = *((uint32_t*)(&data));
     newnode->neighbours.head = NULL;
-    newnode->value = 0 - 1;
     return(newnode);
 }
 
@@ -105,54 +103,69 @@ struct Graph{
 
     }
 
-    uint32_t Dijkstra(GraphNode<T> *start, GraphNode<T> *end){
+    uint32_t Dijkstra(GraphNode<T> *start, GraphNode<T> *end, LinkedList<GraphNode<T>*> *returnPath = NULL){
+        // algorithm specific node data for each node
+        struct NodeData{
+            void *from = NULL;
+            uint32_t costSoFar = -1;
+            uint32_t visited = 0;
+        };
+        NodeData * nodeList = new NodeData[size];
+
         uint32_t weight = 0;
         GraphNode<T> *current = start;
-        Stack<GraphNode<T>*> path;
+
+        // lowest priority queue
         PriorityQueue<GraphNode<T>*> queue;
+        int i = 0;
+        // assigning nodeData pointers to each node
         while (auto node = nodes.iterate()){
-            if (node->data == start)
-                continue;
-            queue.enqueue(node->data, -1);
+            node->data->values = &nodeList[i++];
         }
+        // costSoFar of start node = 0
+        ((NodeData*)current->values)->costSoFar = 0;
+
         while (true){
-            // GraphNode<T> *next = NULL;
-            // uint32_t minWt = -1; 
             while(auto edges = current->neighbours.iterate()){
                 GraphNode<T> *to = edges->data.to;
-                if (!to->visited){
+                NodeData *values = (NodeData*)to->values;
+                if (!values->visited){
+                    // if node hasnt been seen before
+                    if(values->costSoFar == -1){
+                        queue.enqueue(to, -1);
+                    }
                     uint32_t wt = weight + edges->data.weight;
-                    to->value = MIN(wt, to->value);
-                    // if (to->value < minWt){
-                    //     minWt = to->value;
-                    //     next = to;
-                    // }
-                    queue.updateQueue(to, to->value);
+                    if(wt < values->costSoFar){
+                        values->costSoFar = wt;
+                        values->from = current;
+                        queue.updateQueue(to, values->costSoFar);
+                    }
                 }
             }
-            // weight = minWt;
-            current->visited = 1;
-            // if (!next){
-            //     if (path.isEmpty()){
-            //         return(-1);
-            //     }
-            //     current = path.pop();
-            // }
-            // else{
-            //     path.push(current);
-            // }
-            // if (next == end){
-            //     return(weight);
-            // }
+            ((NodeData*)current->values)->visited = 1;
+
+            // get next node to be considered
             if (!queue.isEmpty()){
                 current = queue.dequeue();
-                weight = current->value;
+                weight = ((NodeData*)current->values)->costSoFar;
             }
+            // if queue is empty, no path exists from start to end
             else{
+                delete[] nodeList;
                 return(-1);
             }
+
+            // if end is the lowest cost node is queue, end the algorithm
             if (current == end) {
                 queue.empty();
+                // get path from start to end
+                if (returnPath){
+                    while (current){
+                        returnPath->insertBeginning(newListNode(current));
+                        current = (GraphNode<T>*)((NodeData*)current->values)->from;
+                    }
+                }
+                delete[] nodeList;
                 return(weight);
             }
         }
