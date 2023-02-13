@@ -328,16 +328,13 @@ struct LinkedList{
     }
 
 
-    void display(){
-        std::cout<<"Head -> ";
-        if (head){
-            ListNode<T> * ptr = head;
-            while (ptr){
-                std::cout<<ptr->data<<" -> ";
-                ptr = ptr->next;
-            }
+    void empty(){
+        ListNode<T> *ptr = head;
+        while (ptr){
+            head = head->next;
+            delete(ptr);
+            ptr = head;
         }
-        std::cout<<"NULL\n";
     }
 };
 

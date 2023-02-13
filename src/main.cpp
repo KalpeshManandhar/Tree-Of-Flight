@@ -35,12 +35,15 @@ int main(int argc, char**argv){
         }
     }
 
-    int i = getRandom()%ports.size;
-    int j = getRandom()%ports.size;
-    LinkedList<GraphNode<Airport>*> path1;
-    auto start = ports.nodes.search(i)->data;
-    auto end = ports.nodes.search(j)->data; 
-    uint32_t cost = ports.Dijkstra(start, end, &path1);
+
+    LinkedList<GraphNode<Airport>*> path;
+    
+    GraphNode<Airport> noSelection;
+    noSelection.data.name = "--------";
+    noSelection.data.abv = "";
+    GraphNode<Airport> *start = &noSelection, *end= &noSelection;
+    uint32_t cost = 0;
+
     
     // Setup SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0){
@@ -73,7 +76,7 @@ int main(int argc, char**argv){
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
     ImGui_ImplSDLRenderer_Init(renderer);
 
-    
+
     ImVec4 bgColor = {123,123,123,45};
     bool show = true;
     bool extend = false;
@@ -96,10 +99,11 @@ int main(int argc, char**argv){
 
 
 
-        if (show){
+        {
             int windowFlags = 0;
             windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize;
-            ImGui::Begin("Hello!", &show, windowFlags);
+            ImGui::Begin("Hello!",0, windowFlags);
+            ImGui::SetWindowFontScale(1.1);
             ImGui::Checkbox("Extend", &extend);
             if (extend){
                 ImGui::Text("Hmm boo!");
@@ -111,6 +115,20 @@ int main(int argc, char**argv){
             ImGui::Text("To:   \t%s %s\t",end->data.name, end->data.abv);
             ImGui::Text("Path cost: %u",cost);
             ImGui::NewLine();
+            if (ImGui::Button("Change start")){
+                start = ports.nodes.search(getRandom()%ports.size)->data;
+                cost = 0;
+            }
+            if (ImGui::Button("Change end")){
+                end = ports.nodes.search(getRandom()%ports.size)->data;
+                cost = 0;
+            }
+
+            if (ImGui::Button("Find Path!")){
+                path.empty();
+                cost = ports.Dijkstra(start, end, &path);
+            }
+
             
             ImGui::End();
             
@@ -139,7 +157,7 @@ int main(int argc, char**argv){
         }
 
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        while (auto to = path1.iterate()) {
+        while (auto to = path.iterate()) {
             if (to->next)
                 drawLine(renderer, { to->data->data.x,to->data->data.y }, { to->next->data->data.x,to->next->data->data.y }, {255,0,0});
         }
