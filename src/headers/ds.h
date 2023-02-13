@@ -302,6 +302,22 @@ struct LinkedList{
         return(NULL);
     }
 
+    ListNode<T> * search(int pos){
+        ListNode<T> *ptr = head;
+        for (int i =0; i<pos;i++){
+            if (!ptr)
+                break;
+            ptr = ptr->next;
+        }
+        return(ptr);
+    }
+
+
+
+    ListNode<T> * iterate(int n){
+
+    }
+
     ListNode<T> *iterate(){
         if (!iterator){
             iterator = head;

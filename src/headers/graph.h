@@ -59,7 +59,7 @@ struct Graph{
         size++;
     }
 
-    void addEdge(GraphNode<T> *a, GraphNode<T> *b, uint32_t weight = 0, bool directed = false){
+    void addEdge(GraphNode<T> *a, GraphNode<T> *b, uint32_t weight = 1, bool directed = false){
         _ASSERT(a && b);
         a->neighbours.insertBeginning(newListNode(GraphEdge<T>{b, weight}));
         if (!directed)
