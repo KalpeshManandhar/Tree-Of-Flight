@@ -1,20 +1,10 @@
 #include <iostream>
-#include "headers/graph.h"
-#include "headers/file.h"
+#include "graph.h"
+#include "file.h"
+#include "throwaway.h"
+#include "renderers.hpp"
 
-#include "headers/throwaway.h"
-
-
-#include "imgui.h"
-#include "backends/imgui_impl_sdl2.h"
-#include "backends/imgui_impl_sdlrenderer.h"
-
-#include "SDL.h"
-
-
-
-int main(int argc, char**argv){
-
+int main() {
     char* buffer = loadFileToBuffer("./data/airports.csv");
     Graph<Airport> ports;
     int cursor = 0;
@@ -44,61 +34,15 @@ int main(int argc, char**argv){
     GraphNode<Airport> *start = &noSelection, *end= &noSelection;
     uint32_t cost = 0;
 
+    Context::init();
     
-    // Setup SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) != 0){
-        printf("Error: %s\n", SDL_GetError());
-        return -1;
-    }
-
-    // From 2.0.18: Enable native IME.
-#ifdef SDL_HINT_IME_SHOW_UI
-    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
-#endif
-
-    // imgui init
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-
-    SDL_Window* window = SDL_CreateWindow(
-        "LMAO", 
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-        1280, 720, 
-        SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC|SDL_RENDERER_ACCELERATED);
-    if (!renderer){
-        SDL_Log("Error creating SDL_Renderer!");
-        return 0;
-    }
-
-    // init imgui for sdl w/sdl_renderer
-    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
-    ImGui_ImplSDLRenderer_Init(renderer);
-
-
-    ImVec4 bgColor = {123,123,123,45};
     bool show = true;
     bool extend = false;
     int selection= 0;
     const char *options[] = {"Dijkstra", "A*", "Kruskal"};
-    while (true){
-        SDL_Event event;
-        while(SDL_PollEvent(&event)){
-            ImGui_ImplSDL2_ProcessEvent(&event);
-            if (event.type == SDL_QUIT){
-                return(0);
-            }
-            if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE){
-                return(0);
-            }
-        }
-        ImGui_ImplSDLRenderer_NewFrame();
-        ImGui_ImplSDL2_NewFrame();
-        ImGui::NewFrame();
+    while (!Context::poll_events_and_decide_quit()){
 
-
-
+        Context::init_rendering(Color::silver);
         {
             int windowFlags = 0;
             windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize;
@@ -136,34 +80,47 @@ int main(int argc, char**argv){
         }
 
         
-        ImGui::Render();
-        SDL_SetRenderDrawColor(renderer, bgColor.x, bgColor.y, bgColor.z, bgColor.w);
-        SDL_RenderClear(renderer);
-
         while (auto port = ports.nodes.iterate()){
             Vec2 b = { port->data->data.x, port->data->data.y };
             if (port->data == start) {
-                renderHighlightPoint(renderer, &b, { 255,0,0 });
+
+                Context::Circle{
+                    .center = {b.x, b.y},
+                    .radius = 30,
+                    .color = Color::red
+                }.draw();
+
             }
             else if (port->data == end)
-                renderHighlightPoint(renderer, &b, { 0,255,0 });
+                Context::Circle{
+                    .center = {b.x,b.y},
+                    .radius = 30,
+                    .color = Color::lime
+                }.draw();
             else
-                renderHighlightPoint(renderer, &b);
-            while (auto to = port->data->neighbours.iterate()) {
-                auto c = to->data.to;
-                Vec2 d = { c->data.x, c->data.y };
-                drawLine(renderer, b, d);
-            }
+                Context::Circle{
+                    .center = {b.x,b.y},
+                    .radius = 30,
+                    .color = Color::black
+                }.draw();
+
+          
         }
 
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         while (auto to = path.iterate()) {
             if (to->next)
-                drawLine(renderer, { to->data->data.x,to->data->data.y }, { to->next->data->data.x,to->next->data->data.y }, {255,0,0});
+                Context::Line{
+                    .pos1 = { to->data->data.x,to->data->data.y },
+                    .pos2 = { to->next->data->data.x,to->next->data->data.y },
+                    .color = Color::red,
+                    .line_width = 3
+                }.draw();
         }
 
-
-        ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
-        SDL_RenderPresent(renderer);
+        Context::finish_rendering();
     }
+    Context::clean();
+    return 0;
 }
+
