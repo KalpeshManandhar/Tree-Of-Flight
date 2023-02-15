@@ -16,15 +16,16 @@
 
 
 namespace Context {
-
+    //Some context data
     GLFWwindow* window = nullptr;
     static unsigned int width = 680;
     static unsigned int height = 420;
+    static glm::vec2 mouse_pos = { 0,0 };
 
     glm::vec2 get_real_dim() {
         return { width, height };
     }
-    
+
     static unsigned int circle_prog;
     static unsigned int triangle_prog;
 
@@ -37,7 +38,7 @@ namespace Context {
         glm::vec3 pos;
         glm::vec2 t_pos;
     };
- 
+
     Texture default_texture;
     static unsigned int create_shader(std::string vert_shader_file, std::string frag_shader_file) {
         std::vector<uint8_t> vertShaderSrc;
@@ -49,14 +50,14 @@ namespace Context {
         std::ifstream vertShaderfile(vert_shader_file.c_str(), std::ios::binary | std::ios::ate);
         std::ifstream fragShaderfile(frag_shader_file.c_str(), std::ios::binary | std::ios::ate);
 
-        vertShaderSrc.resize((int)vertShaderfile.tellg()+1);
-        fragShaderSrc.resize((int)fragShaderfile.tellg()+1);
+        vertShaderSrc.resize((int)vertShaderfile.tellg() + 1);
+        fragShaderSrc.resize((int)fragShaderfile.tellg() + 1);
 
         vertShaderfile.seekg(std::ios::beg);
         fragShaderfile.seekg(std::ios::beg);
 
-        vertShaderfile.read((char*)vertShaderSrc.data(), vertShaderSrc.size()-1);
-        fragShaderfile.read((char*)fragShaderSrc.data(), vertShaderSrc.size()-1);
+        vertShaderfile.read((char*)vertShaderSrc.data(), vertShaderSrc.size() - 1);
+        fragShaderfile.read((char*)fragShaderSrc.data(), vertShaderSrc.size() - 1);
 
         vertShaderSrc.back() = 0;
         fragShaderSrc.back() = 0;
@@ -64,7 +65,7 @@ namespace Context {
         vertShaderfile.close();
         fragShaderfile.close();
 
-        char* vertexShaderSource =   (char*)vertShaderSrc.data();
+        char* vertexShaderSource = (char*)vertShaderSrc.data();
         char* fragmentShaderSource = (char*)fragShaderSrc.data();
 
         // vertex shader
@@ -118,7 +119,7 @@ namespace Context {
 
         glBindBuffer(GL_ARRAY_BUFFER, buf.vbo);
         glBufferData(GL_ARRAY_BUFFER,
-            vertices.size()* sizeof(vertices[0]),
+            vertices.size() * sizeof(vertices[0]),
             vertices.data(),
             GL_STATIC_DRAW);
 
@@ -202,18 +203,72 @@ namespace Context {
             {{-sqrtf(3),-1,0.f},{-0.366025403f,0.0f}}
         };
 
-        std::vector<unsigned int> indices2 = { 
+        std::vector<unsigned int> indices2 = {
             0, 1, 2
         };
 
         sqo = create_buffer(vertices1, indices1);
         tro = create_buffer(vertices2, indices2);
     }
-    static void framebuffer_size_callback(GLFWwindow* window, int new_width, int new_height){
+    //Callback std::function objects
+    std::function<void(int button, int action, int mods)> mouse_click_callback = [](int, int, int)->void {};
+    std::function<void(int button, int action, int mods)> keyboard_callback = [](int, int, int)->void {};
+    std::function<void(double delx, double dely)> cursor_move_callback = [](double, double)->void {};
+    std::function<void(double xoff, double yoff)> scroll_callback = [](double, double)-> void {};
+    //Static callback functions
+    static void framebuffer_size_callback(GLFWwindow* window, int new_width, int new_height) {
         width = new_width;
         height = new_height;
         glViewport(0, 0, width, height);
     }
+    static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+        mouse_click_callback(button, action, mods);
+    }
+    static void key_button_callback(GLFWwindow* window, int button, int scancode, int action, int mods) {
+        keyboard_callback(button, action, mods);
+    }
+
+    static void mouse_pos_move_callback(GLFWwindow* window, double xpos, double ypos) {
+        cursor_move_callback(xpos - mouse_pos.x, height - ypos - mouse_pos.y);
+        mouse_pos.x = xpos;
+        mouse_pos.y = height - ypos;
+        
+    }
+    static void mouse_scroll_callback(GLFWwindow* window, double xoff, double yoff) {
+        scroll_callback(xoff, yoff);
+    }
+    // Other helper functions
+    glm::vec2 get_mouse_pos() {
+        return mouse_pos;
+    }
+    void set_mouse_pos(glm::vec2 pos){
+        glm::vec2 p2 = { pos.x, height - pos.y };
+        glfwSetCursorPos(window, p2.x, p2.y);
+    }
+    bool is_mouse_button_pressed(int mouse_button) {
+        return glfwGetMouseButton(window, mouse_button) == GLFW_PRESS;
+    }
+
+    void init_rendering(glm::vec3 clear_col) {
+        glClearColor(clear_col.r, clear_col.g, clear_col.b, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+    }
+    bool poll_events_and_decide_quit() {
+        glfwPollEvents();
+        return glfwWindowShouldClose(Context::window);
+    }
+    void finish_rendering() {
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(Context::window);
+    }
+
     int init() {
         glfwSetErrorCallback(glfw_error_callback);
 
@@ -234,8 +289,6 @@ namespace Context {
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1); // Enable vsync
 
-        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             std::cout << "Failed to initialize GLAD" << std::endl;
@@ -244,6 +297,17 @@ namespace Context {
 
 
         const char* glsl_version = "#version 330";
+
+
+        //Setup callbacks
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+        glfwSetMouseButtonCallback(window, mouse_button_callback);
+        glfwSetKeyCallback(window, key_button_callback);
+        glfwSetScrollCallback(window, mouse_scroll_callback);
+        glfwSetCursorPosCallback(window, mouse_pos_move_callback);
+
+        
+
 
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -273,6 +337,7 @@ namespace Context {
         glfwTerminate();
     }
     
+    //Drawing portions
     void Circle::draw(Texture tex, bool reuse_shader )const {
         if (!reuse_shader)
             glUseProgram(circle_prog);
@@ -440,26 +505,8 @@ namespace Context {
 
         }
 
-    void init_rendering(glm::vec3 clear_col) {
-        glClearColor(clear_col.r, clear_col.g, clear_col.b,1.0);
-        glClear(GL_COLOR_BUFFER_BIT);
 
-        // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-    }
-    bool poll_events_and_decide_quit() {
-        glfwPollEvents();
-        return glfwWindowShouldClose(Context::window);
-    }
-    void finish_rendering() {
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(Context::window);
-    }
-
+    
 };
 
 int opengl_test(){

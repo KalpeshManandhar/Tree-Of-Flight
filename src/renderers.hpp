@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include <glm.hpp>
 #include <GLFW/glfw3.h>
+#include <functional>
 
 //Some color values
 namespace Color {
@@ -29,6 +30,11 @@ namespace Color {
 namespace Context {
     extern GLFWwindow* window;
 
+    //Callback std::function objects
+    extern std::function<void(int button, int action, int mods)> mouse_click_callback;
+    extern std::function<void(int button, int action, int mods)> keyboard_callback;
+    extern std::function<void(double delx, double dely)> cursor_move_callback;
+    extern std::function<void(double xoff, double yoff)> scroll_callback;
     glm::vec2 get_real_dim();
     struct Texture {
         unsigned int tex;
@@ -37,6 +43,9 @@ namespace Context {
         int channels;
     };
     extern Texture default_texture;
+
+
+
     bool createTexture(std::string img_file, Texture& tex);
     int init();
     void clean();
@@ -77,6 +86,10 @@ namespace Context {
         void draw(Texture tex = default_texture, bool reuse_shader = false);
     };
 
+    glm::vec2 get_mouse_pos();
+
+    void set_mouse_pos(glm::vec2 pos);
+    bool is_mouse_button_pressed(int mouse_button);
 
     void init_rendering(glm::vec3 clear_col);
     bool poll_events_and_decide_quit();

@@ -35,7 +35,31 @@ int main() {
     uint32_t cost = 0;
 
     Context::init();
-    
+
+    //For panning{ moving? } features and zooming
+    glm::vec2 pannedAmt = { 0.f,0.f };
+    float zoomAmt = 1.f;
+
+    Context::cursor_move_callback = [&](double delx, double dely) {
+        if (Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_2)) {
+            pannedAmt.x += delx;
+            pannedAmt.y += dely;
+        }
+    };
+
+    Context::scroll_callback = [&](double xoff, double yoff) {
+        zoomAmt *= pow(1.05, yoff);
+    };
+
+    //Converts given coordinate to screen, i.e , applies pan and zoom
+    auto to_screen = [&](glm::vec2 pos) {
+        return (pos  - Context::get_real_dim() * 0.5f) * zoomAmt + Context::get_real_dim() * 0.5f + pannedAmt;
+    };
+    //Does reverse of above
+    auto to_world = [&](glm::vec2 pos) {
+        return (pos - pannedAmt - Context::get_real_dim() * 0.5f) / zoomAmt + Context::get_real_dim() * 0.5f ;
+    };
+
     bool show = true;
     bool extend = false;
     int selection= 0;
@@ -85,23 +109,23 @@ int main() {
             if (port->data == start) {
 
                 Context::Circle{
-                    .center = {b.x, b.y},
-                    .radius = 30,
+                    .center = to_screen({b.x, b.y}) ,
+                    .radius = 10,
                     .color = Color::red
                 }.draw();
 
             }
             else if (port->data == end)
                 Context::Circle{
-                    .center = {b.x,b.y},
-                    .radius = 30,
+                    .center = to_screen({b.x, b.y}),
+                    .radius = 10,
                     .color = Color::lime
                 }.draw();
             else
                 Context::Circle{
-                    .center = {b.x,b.y},
-                    .radius = 30,
-                    .color = Color::black
+                    .center = to_screen({b.x, b.y}),
+                    .radius = 10,
+                    .color = Color::green
                 }.draw();
 
           
@@ -111,8 +135,8 @@ int main() {
         while (auto to = path.iterate()) {
             if (to->next)
                 Context::Line{
-                    .pos1 = { to->data->data.x,to->data->data.y },
-                    .pos2 = { to->next->data->data.x,to->next->data->data.y },
+                    .pos1 = to_screen({ to->data->data.x ,to->data->data.y }),
+                    .pos2 = to_screen({ to->next->data->data.x ,to->next->data->data.y  }),
                     .color = Color::red,
                     .line_width = 3
                 }.draw();

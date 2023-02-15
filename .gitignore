@@ -1,4 +1,5 @@
-Intermediates
+/Intermediates/*
+/Intermediates/
 .vs
 *.exe
 *.pdb
