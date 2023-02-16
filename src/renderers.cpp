@@ -294,7 +294,8 @@ namespace Context {
             std::cout << "Failed to initialize GLAD" << std::endl;
             return -1;
         }
-
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
 
         const char* glsl_version = "#version 330";
 
@@ -509,7 +510,7 @@ namespace Context {
     
 };
 
-int opengl_test(){
+int opengl_demo(){
 
     Context::init();
 
@@ -538,7 +539,7 @@ int opengl_test(){
     .color = {clear_color.x,clear_color.y,clear_color.z},
     .scale = {0.5f,1.f},
     .rotate = (float)angle
-        }.draw();
+        }.draw(baba);
 
         angle += 3.14 / 500;
 

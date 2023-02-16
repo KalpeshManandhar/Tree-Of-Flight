@@ -1,8 +1,30 @@
 #include <iostream>
+#include <chrono>
 #include "graph.h"
 #include "file.h"
 #include "throwaway.h"
 #include "renderers.hpp"
+
+class Timer
+{
+private:
+    // Type aliases to make accessing nested type easier
+    using Clock = std::chrono::steady_clock;
+    using Second = std::chrono::duration<double, std::ratio<1> >;
+
+    std::chrono::time_point<Clock> m_beg{ Clock::now() };
+
+public:
+    void reset()
+    {
+        m_beg = Clock::now();
+    }
+
+    double elapsed() const
+    {
+        return std::chrono::duration_cast<Second>(Clock::now() - m_beg).count();
+    }
+};
 
 int main() {
     char* buffer = loadFileToBuffer("./data/airports.csv");
@@ -64,8 +86,24 @@ int main() {
     bool extend = false;
     int selection= 0;
     const char *options[] = {"Dijkstra", "A*", "Kruskal"};
-    while (!Context::poll_events_and_decide_quit()){
+    Timer f_timer;
+    f_timer.reset();
 
+    //Rate at which the path will be revealed
+    double path_rate = 0.25;
+    //A number representing where, and at which path we currently are
+    //Integer path represents the path number and floating part represents fraction
+    double curr_path = 0;
+    //Plane foto
+    Context::Texture plane_tex;
+    if (!Context::createTexture("plane.png", plane_tex)) {
+        std::cerr << "Couldnot load plane png" << std::endl;
+        plane_tex = Context::default_texture;
+    }
+
+    while (!Context::poll_events_and_decide_quit()){
+        double f_time = f_timer.elapsed();
+        f_timer.reset();
         Context::init_rendering(Color::silver);
         {
             int windowFlags = 0;
@@ -93,6 +131,7 @@ int main() {
             }
 
             if (ImGui::Button("Find Path!")){
+                curr_path = 0;
                 path.empty();
                 cost = ports.Dijkstra(start, end, &path);
             }
@@ -131,17 +170,50 @@ int main() {
           
         }
 
-        //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        int visit_number = curr_path;
+        float leftover = curr_path - visit_number;
+        path.iterator = nullptr;
         while (auto to = path.iterate()) {
-            if (to->next)
-                Context::Line{
-                    .pos1 = to_screen({ to->data->data.x ,to->data->data.y }),
-                    .pos2 = to_screen({ to->next->data->data.x ,to->next->data->data.y  }),
-                    .color = Color::red,
-                    .line_width = 3
-                }.draw();
-        }
+            if (to->next) {
+                if (visit_number > 0) {
+                    Context::Line{
+                        .pos1 = to_screen({ to->data->data.x ,to->data->data.y }),
+                        .pos2 = to_screen({ to->next->data->data.x ,to->next->data->data.y  }),
+                        .color = Color::olive,
+                        .line_width = 3
+                    }.draw();
+                }
+                else if (visit_number == 0) {
+                    glm::vec2 pos1{ to->data->data.x, to->data->data.y };
+                    glm::vec2 pos2{ to->next->data->data.x, to->next->data->data.y };
+                    glm::vec2 mid = pos1 * (1.f - leftover) + pos2 * leftover;
+                    Context::Line{
+                        .pos1 = to_screen(pos1),
+                        .pos2 = to_screen(mid),
+                        .color = Color::olive,
+                        .line_width = 3
+                    }.draw();
+                    pos1 = pos2 - pos1;
+                    float fac = 1.f;
+                    if (pos1.x < 0.f)
+                        fac = -1.f;
+                    Context::Rectangle{
+                        .center = to_screen(mid),
+                        .size = {60,35 * fac},
+                        .color = Color::white,
+                        .rotate = atan2f(pos1.y,pos1.x)
+                    }.draw(plane_tex);
 
+
+                    break;
+                }
+                else
+                    break;
+              
+                visit_number--;
+            }
+        }
+                    curr_path += path_rate * f_time;
         Context::finish_rendering();
     }
     Context::clean();

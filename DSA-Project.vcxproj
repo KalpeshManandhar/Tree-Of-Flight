@@ -195,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="out\baba-1.png" />
+    <Image Include="out\plane.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
