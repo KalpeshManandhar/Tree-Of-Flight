@@ -3,6 +3,7 @@
 #include <glm.hpp>
 #include <GLFW/glfw3.h>
 #include <functional>
+#include <stb_image.h>
 
 //Some color values
 namespace Color {
@@ -86,8 +87,10 @@ namespace Context {
         void draw(Texture tex = default_texture, bool reuse_shader = false);
     };
 
+    void set_window_size(int width, int height);
+    void set_window_title(std::string title);
+    void set_window_icon(std::string icon_file);
     glm::vec2 get_mouse_pos();
-
     void set_mouse_pos(glm::vec2 pos);
     bool is_mouse_button_pressed(int mouse_button);
 

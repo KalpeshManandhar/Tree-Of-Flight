@@ -18,8 +18,8 @@
 namespace Context {
     //Some context data
     GLFWwindow* window = nullptr;
-    static unsigned int width = 680;
-    static unsigned int height = 420;
+    static unsigned int width = 1080;
+    static unsigned int height = 766;
     static glm::vec2 mouse_pos = { 0,0 };
 
     glm::vec2 get_real_dim() {
@@ -161,8 +161,7 @@ namespace Context {
 
     bool createTexture(std::string img_file, Texture& tex) {
         //Load image data
-        tex.channels = 4;
-        unsigned char* file_data = stbi_load(img_file.c_str(), &tex.width, &tex.height, &tex.channels, 0);
+        unsigned char* file_data = stbi_load(img_file.c_str(), &tex.width, &tex.height, &tex.channels, 4);
         if (!file_data) {
             stbi_image_free(file_data);
             return false;
@@ -238,6 +237,27 @@ namespace Context {
         scroll_callback(xoff, yoff);
     }
     // Other helper functions
+    void set_window_size(int width, int height) {
+        glfwSetWindowSize(window, width, height);
+    }
+    void set_window_title(std::string title) {
+        glfwSetWindowTitle(window, title.c_str());
+    }
+    void set_window_icon(std::string icon_file) {
+        GLFWimage icon_img;
+        int icon_chnl = 4;
+        icon_img.pixels = (unsigned char*)stbi_load(
+            icon_file.c_str(),
+            & icon_img.width,
+            & icon_img.height,
+            & icon_chnl,
+            icon_chnl);
+
+        glfwSetWindowIcon(Context::window, 1, &icon_img);
+
+        stbi_image_free(icon_img.pixels);
+
+    }
     glm::vec2 get_mouse_pos() {
         return mouse_pos;
     }

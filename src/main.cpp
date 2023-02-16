@@ -57,7 +57,8 @@ int main() {
     uint32_t cost = 0;
 
     Context::init();
-
+    Context::set_window_title("Tree of Flights");
+    Context::set_window_icon("aeroplane.png");
     //For panning{ moving? } features and zooming
     glm::vec2 pannedAmt = { 0.f,0.f };
     float zoomAmt = 1.f;
