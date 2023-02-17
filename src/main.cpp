@@ -28,7 +28,7 @@ public:
 };
 
 int main() {
-    char* buffer = loadFileToBuffer("./out/data/airports.csv");
+    char* buffer = loadFileToBuffer("./data/airports.csv");
     Graph<Airport> ports;
     int cursor = 0;
     while (buffer[cursor]) {
@@ -100,7 +100,7 @@ int main() {
     double curr_path = 0;
     //Plane foto
     Context::Texture plane_tex;
-    if (!Context::createTexture("plane.png", plane_tex)) {
+    if (!Context::createTexture("./out/plane.png", plane_tex)) {
         std::cerr << "Couldnot load plane png" << std::endl;
         plane_tex = Context::default_texture;
     }
@@ -162,7 +162,6 @@ int main() {
                     10,
                     Color::red
                 }.draw();
-
             }
             else if (port->data == end)
                 Context::Circle{

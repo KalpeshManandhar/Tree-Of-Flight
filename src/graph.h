@@ -130,6 +130,11 @@ struct Graph{
         }
     }
 
+    uint32_t DepthFirstSearch(GraphNode<T> *start, GraphNode<T> *end, LinkedList<GraphNode<T>*> *returnPath = NULL){
+
+    }
+
+
     uint32_t Dijkstra(GraphNode<T> *start, GraphNode<T> *end, LinkedList<GraphNode<T>*> *returnPath = NULL){
         _ASSERT(start && end);
         
