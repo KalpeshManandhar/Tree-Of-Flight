@@ -44,8 +44,8 @@ namespace Context {
         std::vector<uint8_t> vertShaderSrc;
         std::vector<uint8_t> fragShaderSrc;
 
-        vert_shader_file = "shaders\\" + vert_shader_file;
-        frag_shader_file = "shaders\\" + frag_shader_file;
+        vert_shader_file = "./out/shaders/" + vert_shader_file;
+        frag_shader_file = "./out/shaders/" + frag_shader_file;
 
         std::ifstream vertShaderfile(vert_shader_file.c_str(), std::ios::binary | std::ios::ate);
         std::ifstream fragShaderfile(frag_shader_file.c_str(), std::ios::binary | std::ios::ate);
@@ -268,6 +268,9 @@ namespace Context {
     }
     bool is_mouse_button_pressed(int mouse_button) {
         return glfwGetMouseButton(window, mouse_button) == GLFW_PRESS;
+    }
+    bool is_key_pressed(int scancode){
+        return glfwGetKey(window, scancode) == GLFW_PRESS;
     }
 
     void init_rendering(glm::vec3 clear_col) {

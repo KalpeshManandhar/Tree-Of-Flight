@@ -71,39 +71,68 @@ struct Graph{
     }
 
 
-    bool BreadthFirstSearch(GraphNode<T> *start, GraphNode<T> *end){
-        LinkedList<GraphNode<T>*> path;
+    uint32_t BreadthFirstSearch(GraphNode<T> *start, GraphNode<T> *end, LinkedList<GraphNode<T>*> *path = NULL){
+        if (start == end)
+            return(0);
+
+        // algorithm specific data for each node
+        struct NodeData{
+            void *from = NULL;
+            uint32_t visited = false;
+            uint32_t cost = 0;
+        };
+        NodeData *info = new NodeData[size];
+
+        // assigning a NodeData struct to each node
+        int i =0;
+        while (auto node = nodes.iterate()){
+            node->data->values = &info[i++];
+        }
+        
+        
         Queue<GraphNode<T>*> toCheck;
         toCheck.enqueue(start);
 
         GraphNode<T> *current = start;
-        // ListNode<GraphEdge<T>> *edges; 
         while (true){
+            // if no nodes are remaining to process, no path exists
             if (toCheck.isEmpty()){
-
+                delete [] info;
                 return false;
             }
             current = toCheck.dequeue();
-            current->visited = 1;
+            ((NodeData*)current->values)->visited = 1;
+            // if node to be processed is the end node, end algorithm
             if (current == end){
-                // TODO: add the nodes to the path idk how rn
-                return true;
-                break;
+                uint32_t weight = ((NodeData*)current->values)->cost;
+                // if path != NULL, return the path 
+                if (path){
+                    while (current){
+                        path->insertBeginning(newListNode(current));
+                        current = (GraphNode<T>*)((NodeData*)current->values)->from;
+                    }
+                }
+                toCheck.empty();
+                delete[] info;
+                return weight;
+
             }
-            // edges = current->neighbours.head;
-            while (auto edges = current->neighbours.iterate()){
-                GraphNode<T> *neighbour = edges->data.to;
-                if (!neighbour->visited)
-                    toCheck.enqueue(edges->data.to);
-                // edges = edges->next;
+            // iterate through the neighbours of current node
+            while (auto edge = current->neighbours.iterate()){
+                GraphNode<T> *neighbour = edge->data.to;
+                // if not visited, add to queue
+                if (!((NodeData*)neighbour->values)->visited){
+                    ((NodeData*)neighbour->values)->from = current;
+                    ((NodeData*)neighbour->values)->cost = ((NodeData*)current->values)->cost + edge->data.weight;
+                    toCheck.enqueue(neighbour);
+                }
             }
         }
-        //
-        return(false);
-
     }
 
     uint32_t Dijkstra(GraphNode<T> *start, GraphNode<T> *end, LinkedList<GraphNode<T>*> *returnPath = NULL){
+        _ASSERT(start && end);
+        
         // algorithm specific node data for each node
         struct NodeData{
             void *from = NULL;

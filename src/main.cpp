@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <chrono>
+
 #include "graph.h"
 #include "file.h"
 #include "throwaway.h"
@@ -34,7 +35,7 @@ public:
 };
 
 int main() {
-    char* buffer = loadFileToBuffer("./data/airports.csv");
+    char* buffer = loadFileToBuffer("./out/data/airports.csv");
     Graph<Airport> ports;
     int cursor = 0;
     while (buffer[cursor]) {
@@ -63,6 +64,8 @@ int main() {
     GraphNode<Airport> *start = &noSelection, *end= &noSelection;
     uint32_t cost = 0;
 
+    
+
     Context::init();
     Context::set_window_title("Tree of Flights");
     Context::set_window_icon("aeroplane.png");
@@ -71,7 +74,7 @@ int main() {
     float zoomAmt = 1.f;
 
     Context::cursor_move_callback = [&](double delx, double dely) {
-        if (Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_2)) {
+        if (Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1) && Context::is_key_pressed(GLFW_KEY_SPACE)) {
             pannedAmt.x += delx;
             pannedAmt.y += dely;
         }
@@ -91,9 +94,9 @@ int main() {
     };
 
     bool show = true;
-    bool extend = false;
+    bool animations = false;
     int selection= 0;
-    const char *options[] = {"Dijkstra", "A*", "Kruskal"};
+    const char *options[] = {"Dijkstra", "A*", "BFS"};
     Timer f_timer;
     f_timer.reset();
 
@@ -124,15 +127,14 @@ int main() {
             ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.3f, 0.3f, 0.3f, 0.7f));
             ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
             
+
+        // imgui window
         {
             int windowFlags = 0;
             windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize;
             ImGui::Begin("Hello!",0, windowFlags);
             ImGui::SetWindowFontScale(1.1);
-            ImGui::Checkbox("Extend", &extend);
-            if (extend){
-                ImGui::Text("Hmm boo!");
-            }
+            ImGui::Checkbox("Animations", &animations);
 
             ImGui::Combo("Using?", &selection, options, sizeof(options)/sizeof(*options),-1);
             ImGui::Text("Current: %d ",selection);
@@ -152,7 +154,14 @@ int main() {
             if (ImGui::Button("Find Path!")){
                 curr_path = 0;
                 path.empty();
-                cost = ports.Dijkstra(start, end, &path);
+                switch (selection){
+                case 0:     cost = ports.Dijkstra(start, end, &path);break;
+                case 1:     cost = ports.Dijkstra(start, end, &path);break;
+                case 2:     cost = ports.BreadthFirstSearch(start, end, &path);break;
+                
+                default:
+                    break;
+                }
             }
 
             
@@ -188,6 +197,16 @@ int main() {
                     .color = Color::green
                 }.draw(rest_tex);
 
+            while (auto edge = port->data->neighbours.iterate()){
+                auto to = edge->data.to;
+                Context::Line{
+                    to_screen({port->data->data.x, port->data->data.y}),
+                    to_screen({to->data.x, to->data.y}),
+                    Color::gray,
+                    1
+                }.draw();
+            }
+
           
         }
 
@@ -196,7 +215,7 @@ int main() {
         path.iterator = nullptr;
         while (auto to = path.iterate()) {
             if (to->next) {
-                if (visit_number > 0) {
+                if (visit_number > 0 || !animations) {
                     Context::Line{
                         .pos1 = to_screen({ to->data->data.x ,to->data->data.y }),
                         .pos2 = to_screen({ to->next->data->data.x ,to->next->data->data.y  }),

@@ -93,6 +93,7 @@ namespace Context {
     glm::vec2 get_mouse_pos();
     void set_mouse_pos(glm::vec2 pos);
     bool is_mouse_button_pressed(int mouse_button);
+    bool is_key_pressed(int scancode);
 
     void init_rendering(glm::vec3 clear_col);
     bool poll_events_and_decide_quit();
