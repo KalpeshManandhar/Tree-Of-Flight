@@ -1,3 +1,10 @@
+#ifdef NDEBUG 
+#ifdef _WIN32 || _WIN64 
+#define main WinMain
+#endif
+#endif
+
+
 #include <iostream>
 #include <chrono>
 
@@ -28,7 +35,7 @@ public:
 };
 
 int main() {
-    char* buffer = loadFileToBuffer("./data/airports.csv");
+    char* buffer = loadFileToBuffer("data/airports.csv");
     Graph<Airport> ports;
     int cursor = 0;
     while (buffer[cursor]) {
@@ -99,16 +106,27 @@ int main() {
     //Integer path represents the path number and floating part represents fraction
     double curr_path = 0;
     //Plane foto
-    Context::Texture plane_tex;
-    if (!Context::createTexture("./out/plane.png", plane_tex)) {
+    Context::Texture fly_tex;
+    if (!Context::createTexture("plane.png", fly_tex)) {
         std::cerr << "Couldnot load plane png" << std::endl;
-        plane_tex = Context::default_texture;
+        fly_tex = Context::default_texture;
     }
+    Context::Texture rest_tex;
+    if (!Context::createTexture("vert_plane.png", rest_tex)) {
+        std::cerr << "Couldnot load resting plane png" << std::endl;
+        fly_tex = Context::default_texture;
+    }
+
+    
 
     while (!Context::poll_events_and_decide_quit()){
         double f_time = f_timer.elapsed();
         f_timer.reset();
         Context::init_rendering(Color::silver);
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
+            ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.3f, 0.3f, 0.3f, 0.7f));
+            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
+            
 
         // imgui window
         {
@@ -151,30 +169,34 @@ int main() {
             
 
         }
-
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
         
         while (auto port = ports.nodes.iterate()){
             Vec2 b = { port->data->data.x, port->data->data.y };
             if (port->data == start) {
 
                 Context::Circle{
-                    to_screen({b.x, b.y}) ,
-                    10,
-                    Color::red
-                }.draw();
+                    .center = to_screen({b.x, b.y}) ,
+                    .radius = 25,
+                    .color = Color::yellow
+                }.draw(rest_tex);
+
             }
             else if (port->data == end)
                 Context::Circle{
-                    to_screen({b.x, b.y}),
-                    10,
-                    Color::lime
-                }.draw();
+                    .center = to_screen({b.x, b.y}),
+                    .radius = 25,
+                    .color = Color::lime
+                }.draw(rest_tex);
             else
                 Context::Circle{
-                    to_screen({b.x, b.y}),
-                    10,
-                    Color::green
-                }.draw();
+                    .center = to_screen({b.x, b.y}),
+                    .radius = 25,
+                    .color = Color::green
+                }.draw(rest_tex);
+
             while (auto edge = port->data->neighbours.iterate()){
                 auto to = edge->data.to;
                 Context::Line{
@@ -220,7 +242,7 @@ int main() {
                         .size = {60,35 * fac},
                         .color = Color::white,
                         .rotate = atan2f(pos1.y,pos1.x)
-                    }.draw(plane_tex);
+                    }.draw(fly_tex);
 
 
                     break;
