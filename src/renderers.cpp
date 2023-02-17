@@ -161,12 +161,13 @@ namespace Context {
 
     bool createTexture(std::string img_file, Texture& tex) {
         //Load image data
+        stbi_set_flip_vertically_on_load(true);
         unsigned char* file_data = stbi_load(img_file.c_str(), &tex.width, &tex.height, &tex.channels, 4);
         if (!file_data) {
             stbi_image_free(file_data);
             return false;
         }
-
+        stbi_set_flip_vertically_on_load(false);
         tex = generateTexture(file_data, tex.width, tex.height, tex.channels);
 
         stbi_image_free(file_data);
@@ -185,10 +186,10 @@ namespace Context {
 
     static void init_vertices() {
         std::vector<VertexData> vertices1 = {
-            {{  1.f,  1.f, 0.0f} , {1.0f, 0.0f}},  // top right
-            {{  1.f, -1.f, 0.0f} , {1.0f, 1.0f}},  // bottom right
-            {{ -1.f, -1.f, 0.0f} , {0.0f, 1.0f}},  // bottom left
-            {{ -1.f,  1.f, 0.0f} , {0.0f, 0.0f}}   // top left 
+            {{  1.f,  1.f, 0.0f} , {1.0f, 1.0f}},  // top right
+            {{  1.f, -1.f, 0.0f} , {1.0f, 0.0f}},  // bottom right
+            {{ -1.f, -1.f, 0.0f} , {0.0f, 0.0f}},  // bottom left
+            {{ -1.f,  1.f, 0.0f} , {0.0f, 1.0f}}   // top left 
         };
         std::vector<unsigned int> indices1 = {  // note that we start from 0!
             0, 1, 3,  // first Triangle

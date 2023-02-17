@@ -106,6 +106,9 @@
     <Image Include="out\plane.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="out\vert_plane.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="out\data\airports.csv" />
