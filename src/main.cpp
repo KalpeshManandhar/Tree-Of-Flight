@@ -89,7 +89,7 @@ int main() {
     bool show = true;
     bool animations = false;
     int selection= 0;
-    const char *options[] = {"Dijkstra", "A*", "BFS"};
+    const char *options[] = {"Dijkstra", "A*", "BFS", "DFS"};
     Timer f_timer;
     f_timer.reset();
 
@@ -140,9 +140,9 @@ int main() {
                 case 0:     cost = ports.Dijkstra(start, end, &path);break;
                 case 1:     cost = ports.Dijkstra(start, end, &path);break;
                 case 2:     cost = ports.BreadthFirstSearch(start, end, &path);break;
+                case 3:     cost = ports.DepthFirstSearch(start, end, &path);break;
                 
-                default:
-                    break;
+                default:    break;
                 }
             }
 
