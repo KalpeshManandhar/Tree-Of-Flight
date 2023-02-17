@@ -35,7 +35,7 @@ public:
 };
 
 int main() {
-    char* buffer = loadFileToBuffer("./out/data/airports.csv");
+    char* buffer = loadFileToBuffer("data/airports.csv");
     Graph<Airport> ports;
     int cursor = 0;
     while (buffer[cursor]) {

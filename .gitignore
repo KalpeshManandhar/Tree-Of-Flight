@@ -1,6 +1,6 @@
 /Intermediates/*
 /Intermediates/
 .vs
+.vscode
 *.exe
 *.pdb
-*.vcxproj.user
