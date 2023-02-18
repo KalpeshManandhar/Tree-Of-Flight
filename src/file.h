@@ -8,11 +8,7 @@
 #define isAlphabet(X)   (((X >= 'a')&&(X <= 'z'))||((X >= 'A')&&(X <= 'Z')))
 
 
-struct Airport{
-    const char *name, *abv;
-    float x, y;
-    uint32_t flights;
-};
+
 
 static const char *parseStringDelimited(char *buffer, int &cursor, char delimiter = 0){
     while(!isAlphabet(buffer[cursor]))

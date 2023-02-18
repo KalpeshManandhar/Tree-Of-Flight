@@ -34,6 +34,14 @@ public:
     }
 };
 
+struct Airport{
+    const char *name, *abv;
+    Vec2 pos;
+    uint32_t flights;
+};
+
+
+
 int main() {
     char* buffer = loadFileToBuffer("data/airports.csv");
     Graph<Airport> ports;
@@ -42,8 +50,8 @@ int main() {
         Airport a;
         a.abv = parseString_fixedLength(buffer, cursor, 3);
         a.name = parseStringDelimited(buffer, cursor);
-        a.x = getRandom();
-        a.y = getRandom();
+        a.pos.x = getRandom();
+        a.pos.y = getRandom();
         a.flights = getRandom() % 2 +1;
         ports.addNode(newGraphNode(a));
     }
@@ -182,7 +190,7 @@ int main() {
         ImGui::PopStyleColor();
         
         while (auto port = ports.nodes.iterate()){
-            Vec2 b = { port->data->data.x, port->data->data.y };
+            Vec2 b = { port->data->data.pos.x, port->data->data.pos.y };
             if (port->data == start) {
 
                 Context::Circle{
@@ -208,8 +216,8 @@ int main() {
             while (auto edge = port->data->neighbours.iterate()){
                 auto to = edge->data.to;
                 Context::Line{
-                    to_screen({port->data->data.x, port->data->data.y}),
-                    to_screen({to->data.x, to->data.y}),
+                    to_screen({port->data->data.pos.x, port->data->data.pos.y}),
+                    to_screen({to->data.pos.x, to->data.pos.y}),
                     Color::gray,
                     1
                 }.draw();
@@ -225,15 +233,17 @@ int main() {
             if (to->next) {
                 if (visit_number > 0 || !animations) {
                     Context::Line{
-                        .pos1 = to_screen({ to->data->data.x ,to->data->data.y }),
-                        .pos2 = to_screen({ to->next->data->data.x ,to->next->data->data.y  }),
+                        .pos1 = to_screen({ to->data->data.pos.x ,to->data->data.pos.y }),
+                        .pos2 = to_screen({ to->next->data->data.pos.x ,to->next->data->data.pos.y  }),
                         .color = Color::olive,
                         .line_width = 3
                     }.draw();
                 }
                 else if (visit_number == 0) {
-                    glm::vec2 pos1{ to->data->data.x, to->data->data.y };
-                    glm::vec2 pos2{ to->next->data->data.x, to->next->data->data.y };
+                    // glm::vec2 pos1{ to->data->data.x, to->data->data.y };
+                    // glm::vec2 pos2{ to->next->data->data.x, to->next->data->data.y };
+                    glm::vec2 pos1{ to->data->data.pos.x, to->data->data.pos.y };
+                    glm::vec2 pos2{ to->next->data->data.pos.x, to->next->data->data.pos.y };
                     glm::vec2 mid = pos1 * (1.f - leftover) + pos2 * leftover;
                     Context::Line{
                         .pos1 = to_screen(pos1),
