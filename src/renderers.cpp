@@ -290,15 +290,23 @@ namespace Context {
         glfwPollEvents();
         return glfwWindowShouldClose(Context::window)||(glfwGetKey(Context::window,GLFW_KEY_ESCAPE) == GLFW_PRESS);
     }
-    void set_fullscreen(bool value){
-        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    void set_fullscreen(bool value, int monitor_inx){
+        int count = 1;
+        GLFWmonitor** monitors = glfwGetMonitors(&count);
+        if (monitor_inx >= count)
+            monitor_inx = 0;
+        GLFWmonitor* monitor = monitors[monitor_inx];
         const GLFWvidmode* mode = glfwGetVideoMode(monitor);
         int height = mode->height;
         if (!value) {
             monitor = nullptr;
             height -= 20;
         }
+        //glfwIconifyWindow(window);
+        //glfwMaximizeWindow(window);
         glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, height, mode->refreshRate);
+        glfwSwapInterval(1); // Enable vsync
+
     }
     void finish_rendering() {
 
@@ -318,6 +326,7 @@ namespace Context {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_FALSE);
 
         window = glfwCreateWindow(width, height, "LearnOpenGL", NULL, NULL);
         if (window == NULL)

@@ -8,11 +8,6 @@
 #include <iostream>
 #include <chrono>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-
 #include "graph.h"
 #include "file.h"
 #include "throwaway.h"
@@ -84,15 +79,15 @@ int main() {
     ImGui::StyleColorsLight();
     Context::set_window_title("Tree of Flights");
     Context::set_window_icon("aeroplane.png");
-    Context::set_fullscreen(true);
+    Context::set_fullscreen(true,1);
     //For panning{ moving? } features and zooming
     glm::vec2 pannedAmt = { Context::get_real_dim().x*0.43f,0.f};
-    glm::vec2 zoomAmt = { 1.5f,0.9f };
+    glm::vec2 zoomAmt = { 1.6f,0.8f };
 
     Context::cursor_move_callback = [&](double delx, double dely) {
         if (Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1) && Context::is_key_pressed(GLFW_KEY_SPACE)) {
-            pannedAmt.x += delx;
-            pannedAmt.y += dely;
+            pannedAmt.x += delx/zoomAmt.x;
+            pannedAmt.y += dely/zoomAmt.y;
         }
     };
 
@@ -102,11 +97,11 @@ int main() {
 
     //Converts given coordinate to screen, i.e , applies pan and zoom
     auto to_screen = [&](glm::vec2 pos) {
-        return (pos  - Context::get_real_dim() * 0.5f) * zoomAmt + Context::get_real_dim() * 0.5f + pannedAmt;
+        return (pos + pannedAmt - Context::get_real_dim() * 0.5f) * zoomAmt + Context::get_real_dim() * 0.5f ;
     };
     //Does reverse of above
     auto to_world = [&](glm::vec2 pos) {
-        return (pos - pannedAmt - Context::get_real_dim() * 0.5f) / zoomAmt + Context::get_real_dim() * 0.5f ;
+        return (pos - Context::get_real_dim() * 0.5f) / zoomAmt + Context::get_real_dim() * 0.5f - pannedAmt;
     };
 
     bool show = true;
@@ -130,16 +125,33 @@ int main() {
     Context::Texture rest_tex;
     if (!Context::createTexture("vert_plane.png", rest_tex)) {
         std::cerr << "Couldnot load resting plane png" << std::endl;
-        fly_tex = Context::default_texture;
+        rest_tex = Context::default_texture;
     }
+    Context::Texture nepal_tex;
+    if (!Context::createTexture("nepal_map.png", nepal_tex)) {
+        std::cerr << "Couldnot load nepal map png" << std::endl;
+        nepal_tex = Context::default_texture;
+    }
+
+    //These are to adjust aspect ratio and offset for background image
+    glm::vec2 back_scale = { 1.f / zoomAmt.x, 1.f / zoomAmt.y };
+    back_scale *= 1.2f;
+    glm::vec2 back_pan = Context::get_real_dim() * 0.5f - pannedAmt*0.5f;
+
 
     
     while (!Context::poll_events_and_decide_quit()){
         double f_time = f_timer.elapsed();
         printf("Time since last frame: %0.4lf ms\n", f_timer.elapsed()*1000);
         f_timer.reset();
+       
         Context::init_rendering(Color::silver);
- 
+        Context::Rectangle{
+            .center = to_screen(back_pan),
+            .size = {nepal_tex.width, nepal_tex.height},
+            .color = Color::white,
+            .scale = zoomAmt * back_scale
+        }.draw(nepal_tex);
         // imgui window
         {
             int windowFlags = 0;
