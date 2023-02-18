@@ -5,14 +5,36 @@
 #include <functional>
 #include <stb_image.h>
 
+
 //Some color values
 namespace Color {
+#define NRGB(r,g,b) {(r/255.0f),(g/255.0f),(b/255.0f)}
+
 #define col constexpr glm::vec3
+    // reddish 
+    col red2 = NRGB(239,17,42);
+    col crimson = NRGB(216,0,50);
+    col imperialRed = NRGB(237,71,74);
+    col redWood = NRGB(162,62,72);
+    // orange-ish
+    col orange2 = NRGB(253, 121, 121);
+    col lightCoral = NRGB(240,106,109);
+    col tangerine = NRGB(229,143,101);
+    col pale = NRGB(240, 150, 102);
+    // greenish
+    col pgmtGreen = NRGB(38,166,55);
+    col celadon = NRGB(152,223,175);
+    col emerald = NRGB(83,202,121);
+    // greenish black
+    col blackOlive = NRGB(63,71,57);
+
+    col jetblack = NRGB(44,48,46);
+
 
     col white = { 1.0,1.0,1.0 };
     col silver = { 0.75,0.75,0.75 };
     col gray = { 0.5,0.5,0.5 };
-    col black = { 0.0,0.0,0.0 };
+    // col black = { 0.0,0.0,0.0 };
     col red = { 1.0,0.0,0.0 };
     col maroon = { 0.5,0.0,0.0 };
     col yellow = { 1.0,1.0,0.0 };

@@ -18,8 +18,8 @@
 namespace Context {
     //Some context data
     GLFWwindow* window = nullptr;
-    static unsigned int width = 1080;
-    static unsigned int height = 766;
+    static unsigned int width = 1280;
+    static unsigned int height = 720;
     static glm::vec2 mouse_pos = { 0,0 };
 
     glm::vec2 get_real_dim() {
@@ -288,7 +288,7 @@ namespace Context {
     }
     bool poll_events_and_decide_quit() {
         glfwPollEvents();
-        return glfwWindowShouldClose(Context::window);
+        return glfwWindowShouldClose(Context::window)||(glfwGetKey(Context::window,GLFW_KEY_ESCAPE) == GLFW_PRESS);
     }
     void set_fullscreen(bool value){
         GLFWmonitor* monitor = glfwGetPrimaryMonitor();
@@ -305,6 +305,8 @@ namespace Context {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(Context::window);
+        
+
     }
 
     int init() {
@@ -356,7 +358,7 @@ namespace Context {
         // Setup Platform/Renderer backends
         ImGui_ImplGlfw_InitForOpenGL(Context::window, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
-
+    
         init_shaders();
         init_vertices();
 

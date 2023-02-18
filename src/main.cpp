@@ -8,6 +8,11 @@
 #include <iostream>
 #include <chrono>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+
 #include "graph.h"
 #include "file.h"
 #include "throwaway.h"
@@ -131,6 +136,7 @@ int main() {
     
     while (!Context::poll_events_and_decide_quit()){
         double f_time = f_timer.elapsed();
+        printf("Time since last frame: %0.4lf ms\n", f_timer.elapsed()*1000);
         f_timer.reset();
         Context::init_rendering(Color::silver);
  
@@ -205,50 +211,40 @@ int main() {
             }
 
             ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
+            
             if (ImGui::Button("Exit")) {
                 Context::set_close_window();
             }
+
             ImGui::End();
             
-
+        }
+        // show names above selected nodes
+        {
+            if (start != &noSelection){
+                int windowFlags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoMove;
+                ImGui::Begin("Start", NULL, windowFlags);
+                // imgui uses top left as (0,0)
+                glm::vec2 pos = to_screen({start->data.pos.x,start->data.pos.y});
+                pos += glm::vec2{-17.5,60};
+                pos.y = Context::get_real_dim().y - pos.y;
+                ImGui::SetWindowPos({pos.x, pos.y});
+                ImGui::Text("%s",start->data.abv);
+                ImGui::End();
+            }
+            if (end != &noSelection){
+                int windowFlags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoMove;
+                ImGui::Begin("End", NULL, windowFlags);
+                // imgui uses top left as (0,0)
+                glm::vec2 pos = to_screen({end->data.pos.x,end->data.pos.y});
+                pos += glm::vec2{-17.5,60};
+                pos.y = Context::get_real_dim().y - pos.y;
+                ImGui::SetWindowPos({pos.x, pos.y});
+                ImGui::Text("%s",end->data.abv);
+                ImGui::End();
+            }
         }
      
-        while (auto port = ports.nodes.iterate()){
-            Vec2 b = { port->data->data.pos.x, port->data->data.pos.y };
-            if (port->data == start) {
-
-                Context::Circle{
-                    .center = to_screen({b.x, b.y}) ,
-                    .radius = 25,
-                    .color = Color::yellow
-                }.draw(rest_tex);
-
-            }
-            else if (port->data == end)
-                Context::Circle{
-                    .center = to_screen({b.x, b.y}),
-                    .radius = 25,
-                    .color = Color::lime
-                }.draw(rest_tex);
-            else
-                Context::Circle{
-                    .center = to_screen({b.x, b.y}),
-                    .radius = 25,
-                    .color = Color::green
-                }.draw(rest_tex);
-
-            while (auto edge = port->data->neighbours.iterate()){
-                auto to = edge->data.to;
-                Context::Line{
-                    to_screen({port->data->data.pos.x, port->data->data.pos.y}),
-                    to_screen({to->data.pos.x, to->data.pos.y}),
-                    Color::gray,
-                    1
-                }.draw();
-            }
-
-          
-        }
 
         int visit_number = curr_path;
         float leftover = curr_path - visit_number;
@@ -256,11 +252,16 @@ int main() {
         while (auto to = path.iterate()) {
             if (to->next) {
                 if (visit_number > 0 || !animations) {
+                    Context::Circle{
+                        .center = to_screen({to->data->data.pos.x,to->data->data.pos.y}),
+                        .radius = (to->data == start || to->data == end)?25.0f:20.0f,
+                        .color = Color::orange2
+                    }.draw();
                     Context::Line{
                         .pos1 = to_screen({ to->data->data.pos.x ,to->data->data.pos.y }),
                         .pos2 = to_screen({ to->next->data->data.pos.x ,to->next->data->data.pos.y  }),
-                        .color = Color::olive,
-                        .line_width = 3
+                        .color = Color::pale,
+                        .line_width = 6
                     }.draw();
                 }
                 else if (visit_number == 0) {
@@ -269,11 +270,16 @@ int main() {
                     glm::vec2 pos1{ to->data->data.pos.x, to->data->data.pos.y };
                     glm::vec2 pos2{ to->next->data->data.pos.x, to->next->data->data.pos.y };
                     glm::vec2 mid = pos1 * (1.f - leftover) + pos2 * leftover;
+                    Context::Circle{
+                        .center = to_screen(pos1),
+                        .radius = (to->data == start || to->data == end)?25.0f:20.0f,
+                        .color = Color::orange2
+                    }.draw();
                     Context::Line{
                         .pos1 = to_screen(pos1),
                         .pos2 = to_screen(mid),
-                        .color = Color::olive,
-                        .line_width = 3
+                        .color = Color::pale,
+                        .line_width = 6
                     }.draw();
                     pos1 = pos2 - pos1;
                     float fac = 1.f;
@@ -294,9 +300,59 @@ int main() {
               
                 visit_number--;
             }
+            else {
+                Context::Circle{
+                    .center = to_screen({to->data->data.pos.x,to->data->data.pos.y}),
+                    .radius = 25,
+                    .color = Color::orange2
+                }.draw();
+            }
         }
-                    curr_path += path_rate * f_time;
+        curr_path += path_rate * f_time;
+
+
+
+        while (auto port = ports.nodes.iterate()){
+            Vec2 b = { port->data->data.pos.x, port->data->data.pos.y };
+            if (port->data == start) {
+
+                Context::Circle{
+                    .center = to_screen({b.x, b.y}) ,
+                    .radius = 25,
+                    .color = Color::red2
+                }.draw(rest_tex);
+
+            }
+            else if (port->data == end)
+                Context::Circle{
+                    .center = to_screen({b.x, b.y}),
+                    .radius = 25,
+                    .color = Color::emerald
+                }.draw(rest_tex);
+            else
+                Context::Circle{
+                    .center = to_screen({b.x, b.y}),
+                    .radius = 23,
+                    .color = Color::blackOlive
+                }.draw(rest_tex);
+
+            while (auto edge = port->data->neighbours.iterate()){
+                auto to = edge->data.to;
+                Context::Line{
+                    to_screen({port->data->data.pos.x, port->data->data.pos.y}),
+                    to_screen({to->data.pos.x, to->data.pos.y}),
+                    Color::gray,
+                    1
+                }.draw();
+            }
+        }
+
         Context::finish_rendering();
+        double frametime = f_timer.elapsed();
+        const double frameLimit = 1/60.0;
+        // printf("%0.4f\n",frametime);
+        // if (frametime < frameLimit)
+            // Sleep((frameLimit - frametime)*1000);
     }
     Context::clean();
     return 0;
