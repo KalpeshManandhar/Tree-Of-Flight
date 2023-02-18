@@ -110,7 +110,6 @@ namespace Context {
     };
 
     void set_window_size(int width, int height);
-    void set_fullscreen(bool value, int monitor_inx = 0);
     void set_window_title(std::string title);
     void set_window_icon(std::string icon_file);
     glm::vec2 get_mouse_pos();

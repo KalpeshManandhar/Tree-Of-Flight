@@ -77,9 +77,11 @@ int main() {
 
     Context::init();
     ImGui::StyleColorsLight();
+    ImGui::GetStyle().Alpha = 0.75;
+    ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("comic.ttf", 25);
+
     Context::set_window_title("Tree of Flights");
     Context::set_window_icon("aeroplane.png");
-    Context::set_fullscreen(true,1);
     //For panning{ moving? } features and zooming
     glm::vec2 pannedAmt = { Context::get_real_dim().x*0.43f,0.f};
     glm::vec2 zoomAmt = { 1.6f,0.8f };
@@ -138,11 +140,41 @@ int main() {
     back_scale *= 1.2f;
     glm::vec2 back_pan = Context::get_real_dim() * 0.5f - pannedAmt*0.5f;
 
-
-    
+#ifdef  NDEBUG
+    //Loading time
+    const double load_time = 3.0;
+    bool loading = true;
+#endif //  NDEBUG
     while (!Context::poll_events_and_decide_quit()){
         double f_time = f_timer.elapsed();
-        printf("Time since last frame: %0.4lf ms\n", f_timer.elapsed()*1000);
+#ifdef NDEBUG
+        if (loading) {
+            if (f_time > load_time)
+                loading = false;
+            float diag_len = glm::length(Context::get_real_dim());
+            float ratio = Context::get_real_dim().x / (fly_tex.width * 10.f);
+            diag_len -= fly_tex.width * ratio;
+            float curr_len = fly_tex.width * ratio * 0.5 + diag_len * f_time / load_time;
+            Context::init_rendering(Color::blackOlive);
+            Context::Rectangle{
+                .center = glm::normalize(Context::get_real_dim()) * curr_len,
+                .size = glm::vec2{fly_tex.width,fly_tex.height}*ratio,
+                .color = Color::white,
+                .rotate = atan2f(Context::get_real_dim().y,Context::get_real_dim().x)
+            }.draw(fly_tex);
+            int windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove; 
+            ImGui::Begin("", NULL, windowFlags);
+            // imgui uses top left as (0,0)
+            glm::vec2 pos = Context::get_real_dim() * glm::vec2{ 0.33f,0.66f };
+            ImGui::SetWindowPos({ pos.x, pos.y });
+            ImGui::Text("LOADING..."); 
+            ImGui::End();
+            Context::finish_rendering();
+            continue;
+        }
+#endif
+
+
         f_timer.reset();
        
         Context::init_rendering(Color::silver);
@@ -155,7 +187,7 @@ int main() {
         // imgui window
         {
             int windowFlags = 0;
-            windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize;
+            windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse;
             ImGui::Begin("Hello!",0, windowFlags);
             ImGui::SetWindowFontScale(1.2);
             ImGui::Checkbox("Animations", &animations);
@@ -224,39 +256,52 @@ int main() {
 
             ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
             
-            if (ImGui::Button("Exit")) {
-                Context::set_close_window();
-            }
-
             ImGui::End();
             
         }
+
+
         // show names above selected nodes
         {
-            if (start != &noSelection){
-                int windowFlags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoMove;
+            if (start != &noSelection) {
+                int windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove ;
                 ImGui::Begin("Start", NULL, windowFlags);
                 // imgui uses top left as (0,0)
-                glm::vec2 pos = to_screen({start->data.pos.x,start->data.pos.y});
-                pos += glm::vec2{-17.5,60};
+                glm::vec2 pos = to_screen({ start->data.pos.x,start->data.pos.y });
+                pos += glm::vec2{ -17.5,60 };
                 pos.y = Context::get_real_dim().y - pos.y;
-                ImGui::SetWindowPos({pos.x, pos.y});
-                ImGui::Text("%s",start->data.abv);
+                ImGui::SetWindowPos({ pos.x, pos.y }); 
+                ImGui::Text("%s", start->data.abv);
                 ImGui::End();
             }
-            if (end != &noSelection){
-                int windowFlags = ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoMove;
+            if (end != &noSelection) {
+                int windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove;
                 ImGui::Begin("End", NULL, windowFlags);
                 // imgui uses top left as (0,0)
-                glm::vec2 pos = to_screen({end->data.pos.x,end->data.pos.y});
-                pos += glm::vec2{-17.5,60};
+                glm::vec2 pos = to_screen({ end->data.pos.x,end->data.pos.y });
+                pos += glm::vec2{ -17.5,60 };
                 pos.y = Context::get_real_dim().y - pos.y;
-                ImGui::SetWindowPos({pos.x, pos.y});
-                ImGui::Text("%s",end->data.abv);
+                ImGui::SetWindowPos({ pos.x, pos.y });
+                ImGui::Text("%s", end->data.abv);
                 ImGui::End();
             }
         }
-     
+
+
+        //First draw lines
+        while (auto port = ports.nodes.iterate()) {
+
+            while (auto edge = port->data->neighbours.iterate()) {
+                auto to = edge->data.to;
+                Context::Line{
+                    to_screen({port->data->data.pos.x, port->data->data.pos.y}),
+                    to_screen({to->data.pos.x, to->data.pos.y}),
+                    Color::gray,
+                    1
+                }.draw();
+            }
+        }
+
 
         int visit_number = curr_path;
         float leftover = curr_path - visit_number;
@@ -277,8 +322,6 @@ int main() {
                     }.draw();
                 }
                 else if (visit_number == 0) {
-                    // glm::vec2 pos1{ to->data->data.x, to->data->data.y };
-                    // glm::vec2 pos2{ to->next->data->data.x, to->next->data->data.y };
                     glm::vec2 pos1{ to->data->data.pos.x, to->data->data.pos.y };
                     glm::vec2 pos2{ to->next->data->data.pos.x, to->next->data->data.pos.y };
                     glm::vec2 mid = pos1 * (1.f - leftover) + pos2 * leftover;
@@ -322,11 +365,12 @@ int main() {
         }
         curr_path += path_rate * f_time;
 
+        //Now draw icons
 
-
-        while (auto port = ports.nodes.iterate()){
+        while (auto port = ports.nodes.iterate()) {
             Vec2 b = { port->data->data.pos.x, port->data->data.pos.y };
             if (port->data == start) {
+
 
                 Context::Circle{
                     .center = to_screen({b.x, b.y}) ,
@@ -340,31 +384,18 @@ int main() {
                     .center = to_screen({b.x, b.y}),
                     .radius = 25,
                     .color = Color::emerald
-                }.draw(rest_tex);
+            }.draw(rest_tex);
             else
                 Context::Circle{
                     .center = to_screen({b.x, b.y}),
                     .radius = 23,
                     .color = Color::blackOlive
-                }.draw(rest_tex);
+            }.draw(rest_tex);
 
-            while (auto edge = port->data->neighbours.iterate()){
-                auto to = edge->data.to;
-                Context::Line{
-                    to_screen({port->data->data.pos.x, port->data->data.pos.y}),
-                    to_screen({to->data.pos.x, to->data.pos.y}),
-                    Color::gray,
-                    1
-                }.draw();
-            }
         }
 
+
         Context::finish_rendering();
-        double frametime = f_timer.elapsed();
-        const double frameLimit = 1/60.0;
-        // printf("%0.4f\n",frametime);
-        // if (frametime < frameLimit)
-            // Sleep((frameLimit - frametime)*1000);
     }
     Context::clean();
     return 0;
