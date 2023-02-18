@@ -133,7 +133,7 @@ int main() {
             int windowFlags = 0;
             windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize;
             ImGui::Begin("Hello!",0, windowFlags);
-            ImGui::SetWindowFontScale(1.1);
+            ImGui::SetWindowFontScale(1.2);
             ImGui::Checkbox("Animations", &animations);
 
             ImGui::Combo("Using?", &selection, options, sizeof(options)/sizeof(*options),-1);
@@ -150,20 +150,26 @@ int main() {
                 end = ports.nodes.search(getRandom()%ports.size)->data;
                 cost = 0;
             }
-
+            static double timediff = 0;
             if (ImGui::Button("Find Path!")){
                 curr_path = 0;
                 path.empty();
+                
+                uint64_t freq = glfwGetTimerFrequency();
+                uint64_t startTime = glfwGetTimerValue();
                 switch (selection){
                 case 0:     cost = ports.Dijkstra(start, end, &path);break;
-                case 1:     cost = ports.Dijkstra(start, end, &path);break;
+                case 1:     cost = ports.AStar(start, end,&zeroHeuristic ,&path);break;
                 case 2:     cost = ports.BreadthFirstSearch(start, end, &path);break;
                 case 3:     cost = ports.DepthFirstSearch(start, end, &path);break;
                 
                 default:    break;
                 }
+                uint64_t endTime = glfwGetTimerValue();
+                timediff = ((double)(endTime - startTime))/(freq);
             }
 
+            ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
             
             ImGui::End();
             

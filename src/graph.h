@@ -32,21 +32,26 @@ GraphNode<T> * newGraphNode(T data){
     return(newnode);
 }
 
+template <typename T>
+uint32_t zeroHeuristic(GraphNode<T> *start, GraphNode<T> *end){
+    return(0);
+}
 
 
 template <typename T>
 struct Graph{
+    using Node = GraphNode<T>;
     // list of nodes
-    LinkedList<GraphNode<T> *> nodes;
+    LinkedList<Node *> nodes;
     uint32_t size;
 
     Graph():size(0){}
 
-    GraphNode<T> *searchNode(T data){
+    Node *searchNode(T data){
         uint32_t id = *((uint32_t*)(&data));
-        ListNode<GraphNode<T>*> *ptr = nodes.head;
+        ListNode<Node*> *ptr = nodes.head;
         while (ptr){
-            GraphNode<T> *node = ptr->data; 
+            Node *node = ptr->data; 
             if (node->id == id)
                 return(node);
             ptr = ptr->next;
@@ -54,12 +59,12 @@ struct Graph{
         return(NULL);
     }
 
-    void addNode(GraphNode<T> *node){
+    void addNode(Node *node){
         nodes.insertBeginning(newListNode(node));
         size++;
     }
 
-    void addEdge(GraphNode<T> *a, GraphNode<T> *b, uint32_t weight = 1, bool directed = false){
+    void addEdge(Node *a, Node *b, uint32_t weight = 1, bool directed = false){
         _ASSERT(a && b);
         a->neighbours.insertBeginning(newListNode(GraphEdge<T>{b, weight}));
         if (!directed)
@@ -71,7 +76,7 @@ struct Graph{
     }
 
 
-    uint32_t BreadthFirstSearch(GraphNode<T> *start, GraphNode<T> *end, LinkedList<GraphNode<T>*> *path = NULL){
+    uint32_t BreadthFirstSearch(Node *start, Node *end, LinkedList<Node*> *path = NULL){
         if (start == end)
             return(0);
 
@@ -90,10 +95,10 @@ struct Graph{
         }
         
         
-        Queue<GraphNode<T>*> toCheck;
+        Queue<Node*> toCheck;
         toCheck.enqueue(start);
 
-        GraphNode<T> *current = start;
+        Node *current = start;
         while (true){
             // if no nodes are remaining to process, no path exists
             if (toCheck.isEmpty()){
@@ -109,7 +114,7 @@ struct Graph{
                 if (path){
                     while (current){
                         path->insertBeginning(newListNode(current));
-                        current = (GraphNode<T>*)((NodeData*)current->values)->from;
+                        current = (Node*)((NodeData*)current->values)->from;
                     }
                 }
                 toCheck.empty();
@@ -119,7 +124,7 @@ struct Graph{
             }
             // iterate through the neighbours of current node
             while (auto edge = current->neighbours.iterate()){
-                GraphNode<T> *neighbour = edge->data.to;
+                Node *neighbour = edge->data.to;
                 // if not visited, add to queue
                 if (!((NodeData*)neighbour->values)->visited){
                     ((NodeData*)neighbour->values)->from = current;
@@ -130,7 +135,7 @@ struct Graph{
         }
     }
 
-    uint32_t DepthFirstSearch(GraphNode<T> *start, GraphNode<T> *end, LinkedList<GraphNode<T>*> *path = NULL){
+    uint32_t DepthFirstSearch(Node *start, Node *end, LinkedList<Node*> *path = NULL){
         _ASSERT(start && end);
         if (start == end)
             return(0);
@@ -150,10 +155,10 @@ struct Graph{
         }
         
         
-        Stack<GraphNode<T>*> toCheck;
+        Stack<Node*> toCheck;
         toCheck.push(start);
 
-        GraphNode<T> *current = start;
+        Node *current = start;
         while (true){
             // if no nodes are remaining to process, no path exists
             if (toCheck.isEmpty()){
@@ -169,7 +174,7 @@ struct Graph{
                 if (path){
                     while (current){
                         path->insertBeginning(newListNode(current));
-                        current = (GraphNode<T>*)((NodeData*)current->values)->from;
+                        current = (Node*)((NodeData*)current->values)->from;
                     }
                 }
                 toCheck.empty();
@@ -179,7 +184,7 @@ struct Graph{
             }
             // iterate through the neighbours of current node
             while (auto edge = current->neighbours.iterate()){
-                GraphNode<T> *neighbour = edge->data.to;
+                Node *neighbour = edge->data.to;
                 // if not visited, add to queue
                 if (!((NodeData*)neighbour->values)->visited){
                     ((NodeData*)neighbour->values)->from = current;
@@ -191,7 +196,7 @@ struct Graph{
     }
 
 
-    uint32_t Dijkstra(GraphNode<T> *start, GraphNode<T> *end, LinkedList<GraphNode<T>*> *returnPath = NULL){
+    uint32_t Dijkstra(Node *start, Node *end, LinkedList<Node*> *returnPath = NULL){
         _ASSERT(start && end);
         
         // algorithm specific node data for each node
@@ -203,10 +208,10 @@ struct Graph{
         NodeData * nodeList = new NodeData[size];
 
         uint32_t weight = 0;
-        GraphNode<T> *current = start;
+        Node *current = start;
 
         // lowest priority queue
-        PriorityQueue<GraphNode<T>*> queue;
+        PriorityQueue<Node*> queue;
         int i = 0;
         // assigning nodeData pointers to each node
         while (auto node = nodes.iterate()){
@@ -217,7 +222,7 @@ struct Graph{
 
         while (true){
             while(auto edges = current->neighbours.iterate()){
-                GraphNode<T> *to = edges->data.to;
+                Node *to = edges->data.to;
                 NodeData *values = (NodeData*)to->values;
                 if (!values->visited){
                     // if node hasnt been seen before
@@ -252,7 +257,87 @@ struct Graph{
                 if (returnPath){
                     while (current){
                         returnPath->insertBeginning(newListNode(current));
-                        current = (GraphNode<T>*)((NodeData*)current->values)->from;
+                        current = (Node*)((NodeData*)current->values)->from;
+                    }
+                }
+                delete[] nodeList;
+                return(weight);
+            }
+        }
+    }
+
+
+    uint32_t AStar(Node *start, Node *end,uint32_t (*heuristic)(Node*, Node*), LinkedList<Node*>* path = NULL){
+        _ASSERT(start && end);
+        
+        // algorithm specific node data for each node
+        struct NodeData{
+            void *from = NULL;
+            uint32_t costSoFar = -1;
+            uint32_t heuristicCost = -1;
+            uint32_t visited = 0;
+        };
+        NodeData * nodeList = new NodeData[size];
+
+        uint32_t weight = 0;
+        Node *current = start;
+
+        // lowest priority queue
+        PriorityQueue<Node*> queue;
+        int i = 0;
+        // assigning nodeData pointers to each node
+        while (auto node = nodes.iterate()){
+            nodeList[i].heuristicCost = heuristic(node->data, end);
+            node->data->values = &nodeList[i++];
+        }
+        // costSoFar of start node = 0
+        ((NodeData*)current->values)->costSoFar = 0;
+
+        while (true){
+            while(auto edges = current->neighbours.iterate()){
+                Node *to = edges->data.to;
+                NodeData *values = (NodeData*)to->values;
+                if (!values->visited){
+                    // if node hasnt been seen before
+                    if(values->costSoFar == -1){
+                        queue.enqueue(to, -1);
+                    }
+                    // new wt = current costsofar + edge wt
+                    uint32_t wt = ((NodeData*)current->values)->costSoFar + edges->data.weight;
+                    // new total cost = new wt + heuristic value of the node
+                    uint32_t newTotalCost = wt + values->heuristicCost;
+                    // total cost current = heuristic cost + costsofar of node
+                    uint32_t totalCost = values->heuristicCost + values->costSoFar; 
+
+                    // compare the total costs
+                    if(newTotalCost < totalCost){
+                        values->costSoFar = wt;
+                        values->from = current;
+                        queue.updateQueue(to, values->costSoFar);
+                    }
+                }
+            }
+            ((NodeData*)current->values)->visited = 1;
+
+            // get next node to be considered
+            if (!queue.isEmpty()){
+                current = queue.dequeue();
+                weight = ((NodeData*)current->values)->costSoFar;
+            }
+            // if queue is empty, no path exists from start to end
+            else{
+                delete[] nodeList;
+                return(-1);
+            }
+
+            // if end is the lowest cost node is queue, end the algorithm
+            if (current == end) {
+                queue.empty();
+                // get path from start to end
+                if (path){
+                    while (current){
+                        path->insertBeginning(newListNode(current));
+                        current = (Node*)((NodeData*)current->values)->from;
                     }
                 }
                 delete[] nodeList;
