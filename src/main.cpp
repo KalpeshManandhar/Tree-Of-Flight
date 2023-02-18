@@ -154,9 +154,10 @@ int main() {
             if (ImGui::Button("Find Path!")){
                 curr_path = 0;
                 path.empty();
-                
-                uint64_t freq = glfwGetTimerFrequency();
-                uint64_t startTime = glfwGetTimerValue();
+                Timer timer;
+                timer.reset();
+                // uint64_t freq = glfwGetTimerFrequency();
+                // uint64_t startTime = glfwGetTimerValue();
                 switch (selection){
                 case 0:     cost = ports.Dijkstra(start, end, &path);break;
                 case 1:     cost = ports.AStar(start, end,&zeroHeuristic ,&path);break;
@@ -165,8 +166,9 @@ int main() {
                 
                 default:    break;
                 }
-                uint64_t endTime = glfwGetTimerValue();
-                timediff = ((double)(endTime - startTime))/(freq);
+                // uint64_t endTime = glfwGetTimerValue();
+                // timediff = ((double)(endTime - startTime))/(freq);
+                timediff = timer.elapsed();
             }
 
             ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
