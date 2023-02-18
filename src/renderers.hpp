@@ -88,6 +88,7 @@ namespace Context {
     };
 
     void set_window_size(int width, int height);
+    void set_fullscreen(bool value);
     void set_window_title(std::string title);
     void set_window_icon(std::string icon_file);
     glm::vec2 get_mouse_pos();
@@ -97,5 +98,6 @@ namespace Context {
 
     void init_rendering(glm::vec3 clear_col);
     bool poll_events_and_decide_quit();
+    void set_close_window();
     void finish_rendering();
 }

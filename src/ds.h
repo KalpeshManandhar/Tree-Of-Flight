@@ -1,5 +1,5 @@
 #pragma once
-
+#include <functional>
 #include <iostream>
 #include <stdint.h>
 
@@ -292,24 +292,31 @@ struct LinkedList{
         }
     }
 
-    ListNode<T> * search(T data){
-        ListNode<T> *ptr = head;
-        while (ptr){
-            if (ptr->data == data)
+    ListNode<T>* search(std::function<bool(ListNode<T>* node, int count) > condition) {
+        ListNode<T>* ptr = head;
+        int pos = 0;
+        while (ptr) {
+            if (condition(ptr, pos))
                 return(ptr);
             ptr = ptr->next;
+            pos++;
         }
         return(NULL);
     }
 
+    ListNode<T> * search(T data){
+
+        return search([&](ListNode<T>* node, int) {
+            return node->data == data;
+            });
+
+    }
+
     ListNode<T> * search(int pos){
-        ListNode<T> *ptr = head;
-        for (int i =0; i<pos;i++){
-            if (!ptr)
-                break;
-            ptr = ptr->next;
-        }
-        return(ptr);
+        return search([&](ListNode<T>*, int i) {
+            return i == pos;
+            });
+
     }
 
 

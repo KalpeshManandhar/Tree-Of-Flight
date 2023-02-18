@@ -43,6 +43,7 @@ struct Airport{
 
 
 int main() {
+
     char* buffer = loadFileToBuffer("data/airports.csv");
     Graph<Airport> ports;
     int cursor = 0;
@@ -75,11 +76,13 @@ int main() {
     
 
     Context::init();
+    ImGui::StyleColorsLight();
     Context::set_window_title("Tree of Flights");
     Context::set_window_icon("aeroplane.png");
+    Context::set_fullscreen(true);
     //For panning{ moving? } features and zooming
-    glm::vec2 pannedAmt = { 0.f,0.f };
-    float zoomAmt = 1.f;
+    glm::vec2 pannedAmt = { Context::get_real_dim().x*0.43f,0.f};
+    glm::vec2 zoomAmt = { 1.5f,0.9f };
 
     Context::cursor_move_callback = [&](double delx, double dely) {
         if (Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1) && Context::is_key_pressed(GLFW_KEY_SPACE)) {
@@ -126,16 +129,11 @@ int main() {
     }
 
     
-
     while (!Context::poll_events_and_decide_quit()){
         double f_time = f_timer.elapsed();
         f_timer.reset();
         Context::init_rendering(Color::silver);
-            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.3f, 0.3f, 0.3f, 0.3f));
-            ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(0.3f, 0.3f, 0.3f, 0.7f));
-            ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
-            
-
+ 
         // imgui window
         {
             int windowFlags = 0;
@@ -150,13 +148,40 @@ int main() {
             ImGui::Text("To:   \t%s %s\t",end->data.name, end->data.abv);
             ImGui::Text("Path cost: %u",cost);
             ImGui::NewLine();
-            if (ImGui::Button("Change start")){
-                start = ports.nodes.search(getRandom()%ports.size)->data;
-                cost = 0;
+
+            if (ImGui::Button("Select start")){
+                //Change the mouse click callback to set start node to clicked mouse position
+                Context::mouse_click_callback = [&](int button, int action, int mods) {
+                    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
+                        glm::vec2 mpos = Context::get_mouse_pos();
+                        mpos = to_world(mpos);
+                        float search_radius = 25;
+                        auto node = ports.nodes.search(
+                            [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
+                                return glm::distance(mpos, { node->data->data.pos.x,node->data->data.pos.y }) < search_radius;
+                            }
+                        );
+                        if (node)
+                            start = node->data;
+                    }
+                };
             }
-            if (ImGui::Button("Change end")){
-                end = ports.nodes.search(getRandom()%ports.size)->data;
-                cost = 0;
+            if (ImGui::Button("Select end")){
+                //Change the mouse click callback to set start node to clicked mouse position
+                Context::mouse_click_callback = [&](int button, int action, int mods) {
+                    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
+                        glm::vec2 mpos = Context::get_mouse_pos();
+                        mpos = to_world(mpos);
+                        float search_radius = 25;
+                        auto node = ports.nodes.search(
+                            [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
+                                return glm::distance(mpos, { node->data->data.pos.x,node->data->data.pos.y }) < search_radius;
+                            }
+                        );
+                        if (node)
+                            end = node->data;
+                    }
+                };
             }
             static double timediff = 0;
             if (ImGui::Button("Find Path!")){
@@ -180,15 +205,14 @@ int main() {
             }
 
             ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
-            
+            if (ImGui::Button("Exit")) {
+                Context::set_close_window();
+            }
             ImGui::End();
             
 
         }
-        ImGui::PopStyleColor();
-        ImGui::PopStyleColor();
-        ImGui::PopStyleColor();
-        
+     
         while (auto port = ports.nodes.iterate()){
             Vec2 b = { port->data->data.pos.x, port->data->data.pos.y };
             if (port->data == start) {

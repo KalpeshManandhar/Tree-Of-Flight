@@ -273,6 +273,10 @@ namespace Context {
         return glfwGetKey(window, scancode) == GLFW_PRESS;
     }
 
+    void set_close_window(){
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
     void init_rendering(glm::vec3 clear_col) {
         glClearColor(clear_col.r, clear_col.g, clear_col.b, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -285,6 +289,16 @@ namespace Context {
     bool poll_events_and_decide_quit() {
         glfwPollEvents();
         return glfwWindowShouldClose(Context::window);
+    }
+    void set_fullscreen(bool value){
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+        int height = mode->height;
+        if (!value) {
+            monitor = nullptr;
+            height -= 20;
+        }
+        glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, height, mode->refreshRate);
     }
     void finish_rendering() {
 
