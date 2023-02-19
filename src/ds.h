@@ -343,5 +343,8 @@ struct LinkedList{
             ptr = head;
         }
     }
+    bool isEmpty(){
+        return(head == NULL);
+    }
 };
 

@@ -70,7 +70,7 @@ int main() {
     }
 
 
-    LinkedList<GraphNode<Airport>*> path;
+    LinkedList<GraphEdge<Airport>*> path;
     
     GraphNode<Airport> noSelection;
     noSelection.data.name = "--------";
@@ -81,13 +81,14 @@ int main() {
     
 
     Context::init();
-    ImGui::StyleColorsLight();
+    ImGui::StyleColorsDark();
     Context::set_window_title("Tree of Flights");
     Context::set_window_icon("aeroplane.png");
-    Context::set_fullscreen(true);
+    //Context::set_fullscreen(true);
     //For panning{ moving? } features and zooming
     glm::vec2 pannedAmt = { Context::get_real_dim().x*0.43f,0.f};
     glm::vec2 zoomAmt = { 1.5f,0.9f };
+    bool windowHover = false;
 
     Context::cursor_move_callback = [&](double delx, double dely) {
         if (Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1) && Context::is_key_pressed(GLFW_KEY_SPACE)) {
@@ -97,7 +98,8 @@ int main() {
     };
 
     Context::scroll_callback = [&](double xoff, double yoff) {
-        zoomAmt *= pow(1.05, yoff);
+        if(!windowHover)
+            zoomAmt *= pow(1.05, yoff);
     };
 
     //Converts given coordinate to screen, i.e , applies pan and zoom
@@ -139,20 +141,22 @@ int main() {
         printf("Time since last frame: %0.4lf ms\n", f_timer.elapsed()*1000);
         f_timer.reset();
         Context::init_rendering(Color::silver);
- 
+
+        windowHover = false;
         // imgui window
         {
             int windowFlags = 0;
             windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize;
             ImGui::Begin("Hello!",0, windowFlags);
             ImGui::SetWindowFontScale(1.2);
-            ImGui::Checkbox("Animations", &animations);
+
+            windowHover |= ImGui::IsWindowHovered();
 
             ImGui::Combo("Using?", &selection, options, sizeof(options)/sizeof(*options),-1);
             ImGui::Text("Current: %d ",selection);
             ImGui::Text("From: \t%s %s\t",start->data.name, start->data.abv);
             ImGui::Text("To:   \t%s %s\t",end->data.name, end->data.abv);
-            ImGui::Text("Path cost: %u",cost);
+            ImGui::Checkbox("Animations", &animations);
             ImGui::NewLine();
 
             if (ImGui::Button("Select start")){
@@ -195,8 +199,6 @@ int main() {
                 path.empty();
                 Timer timer;
                 timer.reset();
-                // uint64_t freq = glfwGetTimerFrequency();
-                // uint64_t startTime = glfwGetTimerValue();
                 switch (selection){
                 case 0:     cost = ports.Dijkstra(start, end, &path);break;
                 case 1:     cost = ports.AStar(start, end,&zeroHeuristic ,&path);break;
@@ -205,12 +207,42 @@ int main() {
                 
                 default:    break;
                 }
-                // uint64_t endTime = glfwGetTimerValue();
-                // timediff = ((double)(endTime - startTime))/(freq);
                 timediff = timer.elapsed();
             }
-
+            ImGui::NewLine();
             ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
+            ImGui::NewLine();
+            ImGui::Text("Path cost: %u",cost);
+            if(ImGui::CollapsingHeader("Path Details",ImGuiTreeNodeFlags_Framed)){
+                windowHover |= ImGui::IsItemHovered();
+                if(!path.isEmpty()){
+                    // int tableFlags = 0;
+                    int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
+                    ImGui::SetWindowFontScale(1.2);
+                    if (ImGui::BeginTable("split", 4, tableFlags)){
+                        windowHover |= ImGui::IsItemHovered();
+
+                        ImGui::TableSetupColumn("   FROM   ");
+                        ImGui::TableSetupColumn(" ");
+                        ImGui::TableSetupColumn("   TO   ");
+                        ImGui::TableSetupColumn("   COST   ");
+                        ImGui::TableHeadersRow();
+
+                        auto st = start;
+                        while(auto edge = path.iterate()){
+                            auto to = edge->data->to;
+                            ImGui::TableNextColumn(); ImGui::Text("   %s   ", st->data.abv);
+                            ImGui::TableNextColumn(); ImGui::Text(" -- ");
+                            ImGui::TableNextColumn(); ImGui::Text("   %s   ", to->data.abv);
+                            ImGui::TableNextColumn(); ImGui::Text("   %d   ", edge->data->weight);
+                            // ImGui::TableNextRow();
+                            st = to;
+                        }
+                        ImGui::EndTable();
+                    }
+                }
+            }
+
             
             if (ImGui::Button("Exit")) {
                 Context::set_close_window();
@@ -244,22 +276,26 @@ int main() {
                 ImGui::End();
             }
         }
+
+        
      
 
         int visit_number = curr_path;
         float leftover = curr_path - visit_number;
         path.iterator = nullptr;
-        while (auto to = path.iterate()) {
-            if (to->next) {
+        GraphNode<Airport>* st = start;
+        while (auto edge = path.iterate()) {
+            auto to = edge->data->to;
+            // if (to->next) {
                 if (visit_number > 0 || !animations) {
                     Context::Circle{
-                        .center = to_screen({to->data->data.pos.x,to->data->data.pos.y}),
-                        .radius = (to->data == start || to->data == end)?25.0f:20.0f,
+                        .center = to_screen({st->data.pos.x,st->data.pos.y}),
+                        .radius = (st == start || st == end)?25.0f:20.0f,
                         .color = Color::orange2
                     }.draw();
                     Context::Line{
-                        .pos1 = to_screen({ to->data->data.pos.x ,to->data->data.pos.y }),
-                        .pos2 = to_screen({ to->next->data->data.pos.x ,to->next->data->data.pos.y  }),
+                        .pos1 = to_screen({ st->data.pos.x ,st->data.pos.y }),
+                        .pos2 = to_screen({ to->data.pos.x ,to->data.pos.y }),
                         .color = Color::pale,
                         .line_width = 6
                     }.draw();
@@ -267,12 +303,12 @@ int main() {
                 else if (visit_number == 0) {
                     // glm::vec2 pos1{ to->data->data.x, to->data->data.y };
                     // glm::vec2 pos2{ to->next->data->data.x, to->next->data->data.y };
-                    glm::vec2 pos1{ to->data->data.pos.x, to->data->data.pos.y };
-                    glm::vec2 pos2{ to->next->data->data.pos.x, to->next->data->data.pos.y };
+                    glm::vec2 pos1{ st->data.pos.x, st->data.pos.y };
+                    glm::vec2 pos2{ to->data.pos.x, to->data.pos.y };
                     glm::vec2 mid = pos1 * (1.f - leftover) + pos2 * leftover;
                     Context::Circle{
                         .center = to_screen(pos1),
-                        .radius = (to->data == start || to->data == end)?25.0f:20.0f,
+                        .radius = (st == start || st == end)?25.0f:20.0f,
                         .color = Color::orange2
                     }.draw();
                     Context::Line{
@@ -299,29 +335,34 @@ int main() {
                     break;
               
                 visit_number--;
-            }
-            else {
-                Context::Circle{
-                    .center = to_screen({to->data->data.pos.x,to->data->data.pos.y}),
-                    .radius = 25,
-                    .color = Color::orange2
-                }.draw();
-            }
+            // }
+            // else {
+            //     Context::Circle{
+            //         .center = to_screen({to->data->data.pos.x,to->data->data.pos.y}),
+            //         .radius = 25,
+            //         .color = Color::orange2
+            //     }.draw();
+            // }
+                st = to;
+                if (st == end) {
+                    Context::Circle{
+                        .center = to_screen({st->data.pos.x,st->data.pos.y}),
+                        .radius = 25.0f,
+                        .color = Color::orange2
+                    }.draw();
+                }
         }
         curr_path += path_rate * f_time;
-
 
 
         while (auto port = ports.nodes.iterate()){
             Vec2 b = { port->data->data.pos.x, port->data->data.pos.y };
             if (port->data == start) {
-
                 Context::Circle{
                     .center = to_screen({b.x, b.y}) ,
                     .radius = 25,
                     .color = Color::red2
                 }.draw(rest_tex);
-
             }
             else if (port->data == end)
                 Context::Circle{
@@ -351,8 +392,8 @@ int main() {
         double frametime = f_timer.elapsed();
         const double frameLimit = 1/60.0;
         // printf("%0.4f\n",frametime);
-        // if (frametime < frameLimit)
-            // Sleep((frameLimit - frametime)*1000);
+        if (frametime < frameLimit)
+            Sleep((frameLimit - frametime)*1000);
     }
     Context::clean();
     return 0;
