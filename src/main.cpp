@@ -78,7 +78,7 @@ int main() {
     Context::init();
     ImGui::StyleColorsDark();
     ImGui::GetStyle().Alpha = 0.75;
-    ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("comic.ttf", 25);
+    //ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("comic.ttf", 25);
 
     Context::set_window_title("Tree of Flights");
     Context::set_window_icon("aeroplane.png");
@@ -191,9 +191,9 @@ int main() {
         // imgui window
         {
             int windowFlags = 0;
-            windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse;
+            windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize;
             ImGui::Begin("Hello!",0, windowFlags);
-            ImGui::SetWindowFontScale(1.2);
+            ImGui::SetWindowFontScale(1.5);
 
             windowHover |= ImGui::IsWindowHovered();
 
@@ -263,7 +263,7 @@ int main() {
                 if(!path.isEmpty()){
                     // int tableFlags = 0;
                     int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
-                    ImGui::SetWindowFontScale(1.2);
+                    ImGui::SetWindowFontScale(1.5);
                     if (ImGui::BeginTable("split", 4, tableFlags)){
                         windowHover |= ImGui::IsItemHovered();
 
