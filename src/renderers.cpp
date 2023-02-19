@@ -18,8 +18,8 @@
 namespace Context {
     //Some context data
     GLFWwindow* window = nullptr;
-    static unsigned int width = 1280;
-    static unsigned int height = 720;
+    static int width = 1280;
+    static int height = 720;
     static glm::vec2 mouse_pos = { 0,0 };
 
     glm::vec2 get_real_dim() {
@@ -229,7 +229,7 @@ namespace Context {
     }
 
     static void mouse_pos_move_callback(GLFWwindow* window, double xpos, double ypos) {
-        cursor_move_callback(xpos - mouse_pos.x, height - ypos - mouse_pos.y);
+        cursor_move_callback(xpos - mouse_pos.x, height - ypos - mouse_pos.y );
         mouse_pos.x = xpos;
         mouse_pos.y = height - ypos;
         
@@ -263,7 +263,7 @@ namespace Context {
         return mouse_pos;
     }
     void set_mouse_pos(glm::vec2 pos){
-        glm::vec2 p2 = { pos.x, height - pos.y };
+        glm::vec2 p2 = { pos.x , height - pos.y };
         glfwSetCursorPos(window, p2.x, p2.y);
     }
     bool is_mouse_button_pressed(int mouse_button) {
@@ -290,16 +290,7 @@ namespace Context {
         glfwPollEvents();
         return glfwWindowShouldClose(Context::window)||(glfwGetKey(Context::window,GLFW_KEY_ESCAPE) == GLFW_PRESS);
     }
-    void set_fullscreen(bool value){
-        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-        int height = mode->height;
-        if (!value) {
-            monitor = nullptr;
-            height -= 20;
-        }
-        glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, height, mode->refreshRate);
-    }
+    
     void finish_rendering() {
 
         ImGui::Render();
@@ -318,8 +309,8 @@ namespace Context {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-        window = glfwCreateWindow(width, height, "LearnOpenGL", NULL, NULL);
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+       window = glfwCreateWindow(width, height, "LearnOpenGL", NULL, NULL);
         if (window == NULL)
         {
             std::cout << "Failed to create GLFW window" << std::endl;
@@ -347,7 +338,8 @@ namespace Context {
         glfwSetScrollCallback(window, mouse_scroll_callback);
         glfwSetCursorPosCallback(window, mouse_pos_move_callback);
 
-        
+        set_mouse_pos({ 0.f,0.f });
+        glfwGetWindowSize(window, &width, &height);
 
 
         IMGUI_CHECKVERSION();
