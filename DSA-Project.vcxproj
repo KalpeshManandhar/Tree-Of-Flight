@@ -198,7 +198,6 @@
     <None Include="out\shaders\triangle.vs" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="out\baba-1.png" />
     <Image Include="out\plane.png" />
     <Image Include="out\vert_plane.png" />
   </ItemGroup>

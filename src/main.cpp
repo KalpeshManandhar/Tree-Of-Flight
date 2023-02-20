@@ -209,6 +209,11 @@ int main() {
             ImGui::Text("From: \t%s %s\t",start->data.name, start->data.abv);
             ImGui::Text("To:   \t%s %s\t",end->data.name, end->data.abv);
             ImGui::Checkbox("Animations", &animations);
+            if (animations) {
+                float speed = path_rate;
+                ImGui::SliderFloat("Adjust Speed", &speed, 0.1f, 2.f);
+                path_rate = speed;
+            }
             ImGui::NewLine();
 
             if (ImGui::Button("Select start")){
