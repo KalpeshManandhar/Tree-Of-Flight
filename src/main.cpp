@@ -72,7 +72,7 @@ int main() {
     }
 
 
-    LinkedList<GraphEdge<Airport>*> path;
+    Path<Airport> path;
     
     GraphNode<Airport> noSelection;
     noSelection.data.name = "--------";
@@ -253,7 +253,7 @@ int main() {
             static double timediff = 0;
             if (ImGui::Button("Find Path!")){
                 curr_path = 0;
-                path.empty();
+                path.edges.empty();
                 Timer timer;
                 timer.reset();
                 switch (selection){
@@ -272,7 +272,7 @@ int main() {
             ImGui::Text("Path cost: %u",cost);
             if(ImGui::CollapsingHeader("Path Details",ImGuiTreeNodeFlags_Framed)){
                 windowHover |= ImGui::IsItemHovered();
-                if(!path.isEmpty()){
+                if(!path.edges.isEmpty()){
                     // int tableFlags = 0;
                     int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
                     ImGui::SetWindowFontScale(1.5);
@@ -285,13 +285,13 @@ int main() {
                         ImGui::TableSetupColumn("   COST   ");
                         ImGui::TableHeadersRow();
 
-                        auto st = start;
-                        while(auto edge = path.iterate()){
+                        auto st = path.start;
+                        while(auto edge = path.edges.iterate()){
                             auto to = edge->data->to;
-                            ImGui::TableNextColumn(); ImGui::Text("   %s   ", st->data.abv);
+                            ImGui::TableNextColumn(); ImGui::Text("    %s   ", st->data.abv);
                             ImGui::TableNextColumn(); ImGui::Text(" -- ");
-                            ImGui::TableNextColumn(); ImGui::Text("   %s   ", to->data.abv);
-                            ImGui::TableNextColumn(); ImGui::Text("   %d   ", edge->data->weight);
+                            ImGui::TableNextColumn(); ImGui::Text("    %s   ", to->data.abv);
+                            ImGui::TableNextColumn(); ImGui::Text("    %d   ", edge->data->weight);
                             // ImGui::TableNextRow();
                             st = to;
                         }
@@ -350,9 +350,9 @@ int main() {
 
         int visit_number = curr_path;
         float leftover = curr_path - visit_number;
-        path.iterator = nullptr;
-        GraphNode<Airport>* st = start;
-        while (auto edge = path.iterate()) {
+        path.edges.iterator = nullptr;
+        GraphNode<Airport>* st = path.start;
+        while (auto edge = path.edges.iterate()) {
             auto to = edge->data->to;
             // if (to->next) {
                 if (visit_number > 0 || !animations) {

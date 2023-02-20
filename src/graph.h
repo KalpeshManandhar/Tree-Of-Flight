@@ -12,6 +12,12 @@ struct GraphEdge{
 };
 
 template <typename T>
+struct Path{
+    GraphNode<T> *start;
+    LinkedList<GraphEdge<T>*> edges;
+};
+
+template <typename T>
 struct GraphNode{
     T data;
     uint32_t id;
@@ -42,6 +48,7 @@ template <typename T>
 struct Graph{
     using Node = GraphNode<T>;
     using Edge = GraphEdge<T>;
+    using Path = Path<T>;
     // list of nodes
     LinkedList<Node *> nodes;
     uint32_t size;
@@ -77,9 +84,11 @@ struct Graph{
     }
 
 
-    uint32_t BreadthFirstSearch(Node *start, Node *end, LinkedList<Edge*> *path = NULL){
+    uint32_t BreadthFirstSearch(Node *start, Node *end, Path *returnpath = NULL){
+        _ASSERT(start && end);
         if (start == end)
             return(0);
+        returnpath->start = start;
 
         // algorithm specific data for each node
         struct NodeData{
@@ -113,10 +122,10 @@ struct Graph{
             if (current == end){
                 uint32_t weight = ((NodeData*)current->values)->cost;
                 // if path != NULL, return the path 
-                if (path){
+                if (returnpath){
                     while (current){
                         if (auto p = ((NodeData*)current->values)->path)
-                            path->insertBeginning(newListNode(p));
+                            returnpath->edges.insertBeginning(newListNode(p));
                         current = (Node*)((NodeData*)current->values)->from;
                     }
                 }
@@ -139,10 +148,11 @@ struct Graph{
         }
     }
 
-    uint32_t DepthFirstSearch(Node *start, Node *end, LinkedList<Edge*> *path = NULL){
+    uint32_t DepthFirstSearch(Node *start, Node *end, Path *returnpath = NULL){
         _ASSERT(start && end);
         if (start == end)
             return(0);
+        returnpath->start = start;
 
         // algorithm specific data for each node
         struct NodeData{
@@ -176,10 +186,10 @@ struct Graph{
             if (current == end){
                 uint32_t weight = ((NodeData*)current->values)->cost;
                 // if path != NULL, return the path 
-                if (path){
+                if (returnpath){
                     while (current){
                         if (auto p = ((NodeData*)current->values)->path)
-                            path->insertBeginning(newListNode(p));
+                            returnpath->edges.insertBeginning(newListNode(p));
                         current = (Node*)((NodeData*)current->values)->from;
                     }
                 }
@@ -203,8 +213,11 @@ struct Graph{
     }
 
 
-    uint32_t Dijkstra(Node *start, Node *end, LinkedList<Edge*> *returnPath = NULL){
+    uint32_t Dijkstra(Node *start, Node *end, Path *returnPath = NULL){
         _ASSERT(start && end);
+        if (start == end)
+            return(0);
+        returnPath->start = start;
         
         // algorithm specific node data for each node
         struct NodeData{
@@ -266,7 +279,7 @@ struct Graph{
                 if (returnPath){
                     while (current){
                         if (auto p = ((NodeData*)current->values)->path)
-                            returnPath->insertBeginning(newListNode(p));
+                            returnPath->edges.insertBeginning(newListNode(p));
                         current = (Node*)((NodeData*)current->values)->from;
                     }
                 }
@@ -277,8 +290,11 @@ struct Graph{
     }
 
 
-    uint32_t AStar(Node *start, Node *end,uint32_t (*heuristic)(Node*, Node*), LinkedList<Edge*>* path = NULL){
+    uint32_t AStar(Node *start, Node *end,uint32_t (*heuristic)(Node*, Node*), Path* returnpath = NULL){
         _ASSERT(start && end);
+        if (start == end)
+            return 0;
+        returnpath->start = start;
         
         // algorithm specific node data for each node
         struct NodeData{
@@ -346,10 +362,10 @@ struct Graph{
             if (current == end) {
                 queue.empty();
                 // get path from start to end
-                if (path){
+                if (returnpath){
                     while (current){
                         if (auto p = ((NodeData*)current->values)->path)
-                            path->insertBeginning(newListNode(p));
+                            returnpath->edges.insertBeginning(newListNode(p));
                         current = (Node*)((NodeData*)current->values)->from;
                     }
                 }

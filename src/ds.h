@@ -66,6 +66,7 @@ struct Stack{
             deleteNode(ptr);
             return(value);
         }
+        return(0);
     }
 
     bool isEmpty(){
