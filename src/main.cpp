@@ -56,11 +56,18 @@ int main() {
         a.flights = getRandom() % 2 +1;
         ports.addNode(newGraphNode(a));
     }
+    uint32_t maxWt = 0;
+    uint32_t minWt = UINT32_MAX;
     while (auto port= ports.nodes.iterate()) {
         for (int i = 0;i < port->data->data.flights;i++) {
             int j = getRandom()%ports.size;
             auto to = ports.nodes.search(j);
-            ports.addEdge(port->data, to->data);
+            uint32_t wt = getRandom() % 4 + 1;
+            if (wt > maxWt)
+                maxWt = wt;
+            if (wt < minWt)
+                minWt = wt;
+            ports.addEdge(port->data, to->data,wt );
         }
     }
 
@@ -83,7 +90,7 @@ int main() {
     Context::set_window_title("Tree of Flights");
     Context::set_window_icon("aeroplane.png");
     //For panning{ moving? } features and zooming
-    glm::vec2 pannedAmt = { Context::get_real_dim().x*0.43f,0.f};
+    glm::vec2 pannedAmt = { Context::get_real_dim().x*0.29f,0.f};
     glm::vec2 zoomAmt = { 1.6f,0.8f };
     bool windowHover = false;
 
@@ -140,7 +147,7 @@ int main() {
     //These are to adjust aspect ratio and offset for background image
     glm::vec2 back_scale = { 1.f / zoomAmt.x, 1.f / zoomAmt.y };
     back_scale *= 1.2f;
-    glm::vec2 back_pan = Context::get_real_dim() * 0.5f - pannedAmt*0.5f;
+    glm::vec2 back_pan = Context::get_real_dim() * 0.5f - pannedAmt*0.85f;
 
 #ifdef  NDEBUG
     //Loading time
@@ -383,13 +390,9 @@ int main() {
                         .color = Color::white,
                         .rotate = atan2f(pos1.y,pos1.x)
                     }.draw(fly_tex);
+                    curr_path += ( maxWt *2.0 - edge->data->weight ) * path_rate * f_time / (maxWt*2.0 - minWt);
 
-
-                    break;
-                }
-                else
-                    break;
-              
+                }              
                 visit_number--;
             // }
             // else {
@@ -408,7 +411,6 @@ int main() {
                     }.draw();
                 }
         }
-        curr_path += path_rate * f_time;
 
         //Now draw icons
 
