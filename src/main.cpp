@@ -15,6 +15,7 @@
 
 using Vec2 = glm::vec2;
 
+
 class Timer
 {
 private:
@@ -42,10 +43,17 @@ struct Airport{
     uint32_t flights;
 };
 
-uint32_t EuclideanHeuristic(GraphNode<Airport>*start, GraphNode<Airport>*end){
+uint32_t Euclidean(GraphNode<Airport>*start, GraphNode<Airport>*end){
     return((uint32_t)glm::distance(start->data.pos, end->data.pos));
 }
 
+uint32_t TaxiCab(GraphNode<Airport>*start, GraphNode<Airport>*end){
+    return((uint32_t)(glm::abs(start->data.pos.x - end->data.pos.x)+glm::abs(start->data.pos.y - end->data.pos.y)));
+}
+
+uint32_t zeroHeuristic(GraphNode<Airport> *start, GraphNode<Airport> *end){
+    return(0);
+}
 
 int main() {
 
@@ -120,10 +128,12 @@ int main() {
         return (pos - Context::get_real_dim() * 0.5f) / zoomAmt + Context::get_real_dim() * 0.5f - pannedAmt;
     };
 
-    bool show = true;
+    // bool show = true;
     bool animations = false;
     int selection= 0;
-    const char *options[] = {"Dijkstra", "A*", "BFS", "DFS"};
+    int heuristicSelected= 0;
+    const char *algoOptions[] = {"Dijkstra", "A*", "BFS", "DFS"};
+    const char *heuristicOptions[] = {"Zero", "Euclidean distance", "TaxiCab distance"};
     Timer f_timer;
     f_timer.reset();
 
@@ -209,7 +219,9 @@ int main() {
 
             windowHover |= ImGui::IsWindowHovered();
 
-            ImGui::Combo("Using?", &selection, options, sizeof(options)/sizeof(*options),-1);
+            ImGui::Combo("Using?", &selection, algoOptions, sizeof(algoOptions)/sizeof(*algoOptions),-1);
+            if(selection == 1)
+                ImGui::Combo("Heuristic?", &heuristicSelected, heuristicOptions, sizeof(heuristicOptions)/sizeof(*heuristicOptions), -1);
             ImGui::Text("Current: %d ",selection);
             ImGui::Text("From: \t%s %s\t",start->data.name, start->data.abv);
             ImGui::Text("To:   \t%s %s\t",end->data.name, end->data.abv);
@@ -261,12 +273,20 @@ int main() {
                 path.edges.empty();
                 Timer timer;
                 timer.reset();
+
+                uint32_t (*heuristicFunc)(GraphNode<Airport>*,GraphNode<Airport>*)=NULL;
+                switch (heuristicSelected){
+                case 0:     heuristicFunc = &zeroHeuristic;    break;
+                case 1:     heuristicFunc = &Euclidean;        break;
+                case 2:     heuristicFunc = &TaxiCab;          break;
+                default:    break;
+                }
+
                 switch (selection){
-                case 0:     cost = ports.Dijkstra(start, end, &path);break;
-                case 1:     cost = ports.AStar(start, end,&EuclideanHeuristic ,&path);break;
-                case 2:     cost = ports.BreadthFirstSearch(start, end, &path);break;
-                case 3:     cost = ports.DepthFirstSearch(start, end, &path);break;
-                
+                case 0:     cost = ports.Dijkstra(start, end, &path);           break;
+                case 1:     cost = ports.AStar(start, end, heuristicFunc,&path);break;
+                case 2:     cost = ports.BreadthFirstSearch(start, end, &path); break;
+                case 3:     cost = ports.DepthFirstSearch(start, end, &path);   break;
                 default:    break;
                 }
                 timediff = timer.elapsed();
@@ -306,7 +326,7 @@ int main() {
                     }
                 }
             }
-            ImGui::Text("Euclidean distance covered: %u", dist);
+            // ImGui::Text("Euclidean distance covered: %u", dist);
 
             
             ImGui::End();
@@ -316,27 +336,31 @@ int main() {
 
         // show names above selected nodes
         {
-            if (start != &noSelection) {
+            auto showAirportName = [=](Airport *a){
                 int windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove ;
-                ImGui::Begin("Start", NULL, windowFlags);
+                ImGui::Begin(a->abv, NULL, windowFlags);
                 // imgui uses top left as (0,0)
-                glm::vec2 pos = to_screen({ start->data.pos.x,start->data.pos.y });
+                glm::vec2 pos = to_screen({ a->pos.x,a->pos.y });
                 pos += glm::vec2{ -17.5,60 };
                 pos.y = Context::get_real_dim().y - pos.y;
                 ImGui::SetWindowPos({ pos.x, pos.y }); 
-                ImGui::Text("%s", start->data.abv);
+                ImGui::Text("%s", a->abv);
                 ImGui::End();
+            };
+
+
+            if (start != &noSelection) {
+                showAirportName(&start->data);
             }
             if (end != &noSelection) {
-                int windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove;
-                ImGui::Begin("End", NULL, windowFlags);
-                // imgui uses top left as (0,0)
-                glm::vec2 pos = to_screen({ end->data.pos.x,end->data.pos.y });
-                pos += glm::vec2{ -17.5,60 };
-                pos.y = Context::get_real_dim().y - pos.y;
-                ImGui::SetWindowPos({ pos.x, pos.y });
-                ImGui::Text("%s", end->data.abv);
-                ImGui::End();
+                showAirportName(&end->data);
+            }
+            if (!path.edges.isEmpty()){
+                while (auto edge = path.edges.iterate()){
+                    auto to = edge->data->to;
+                    if (to != end)
+                        showAirportName(&to->data);
+                }
             }
         }
 

@@ -38,11 +38,6 @@ GraphNode<T> * newGraphNode(T data){
     return(newnode);
 }
 
-template <typename T>
-uint32_t zeroHeuristic(GraphNode<T> *start, GraphNode<T> *end){
-    return(0);
-}
-
 
 template <typename T>
 struct Graph{
