@@ -13,6 +13,8 @@
 #include "throwaway.h"
 #include "renderers.hpp"
 
+using Vec2 = glm::vec2;
+
 class Timer
 {
 private:
@@ -40,6 +42,9 @@ struct Airport{
     uint32_t flights;
 };
 
+uint32_t EuclideanHeuristic(GraphNode<Airport>*start, GraphNode<Airport>*end){
+    return((uint32_t)glm::distance(start->data.pos, end->data.pos));
+}
 
 
 int main() {
@@ -258,7 +263,7 @@ int main() {
                 timer.reset();
                 switch (selection){
                 case 0:     cost = ports.Dijkstra(start, end, &path);break;
-                case 1:     cost = ports.AStar(start, end,&zeroHeuristic ,&path);break;
+                case 1:     cost = ports.AStar(start, end,&EuclideanHeuristic ,&path);break;
                 case 2:     cost = ports.BreadthFirstSearch(start, end, &path);break;
                 case 3:     cost = ports.DepthFirstSearch(start, end, &path);break;
                 
@@ -270,6 +275,7 @@ int main() {
             ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
             ImGui::NewLine();
             ImGui::Text("Path cost: %u",cost);
+            uint32_t dist = 0; 
             if(ImGui::CollapsingHeader("Path Details",ImGuiTreeNodeFlags_Framed)){
                 windowHover |= ImGui::IsItemHovered();
                 if(!path.edges.isEmpty()){
@@ -293,12 +299,14 @@ int main() {
                             ImGui::TableNextColumn(); ImGui::Text("    %s   ", to->data.abv);
                             ImGui::TableNextColumn(); ImGui::Text("    %d   ", edge->data->weight);
                             // ImGui::TableNextRow();
+                            dist += glm::distance(st->data.pos, to->data.pos);
                             st = to;
                         }
                         ImGui::EndTable();
                     }
                 }
             }
+            ImGui::Text("Euclidean distance covered: %u", dist);
 
             
             ImGui::End();

@@ -1,7 +1,6 @@
-#include "tsu_math.h"
-#define Renderer SDL_Renderer
+#pragma once
 
-int getRandom() {
+static int getRandom() {
     int a[] = {
         787,122,853,482,42,567,162,404,722,427,
 2,840,678,305,375,307,866,639,828,530,337,

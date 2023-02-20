@@ -334,7 +334,7 @@ struct Graph{
                     // new total cost = new wt + heuristic value of the node
                     uint32_t newTotalCost = wt + values->heuristicCost;
                     // total cost current = heuristic cost + costsofar of node
-                    uint32_t totalCost = values->heuristicCost + values->costSoFar; 
+                    uint32_t totalCost = (values->costSoFar == -1)?values->costSoFar:values->heuristicCost + values->costSoFar; 
 
                     // compare the total costs
                     if(newTotalCost < totalCost){
