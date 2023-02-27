@@ -13,7 +13,6 @@
 #include "throwaway.h"
 #include "renderers.hpp"
 
-using Vec2 = glm::vec2;
 
 
 class Timer
@@ -36,6 +35,66 @@ public:
         return std::chrono::duration_cast<Second>(Clock::now() - m_beg).count();
     }
 };
+
+
+using Vec2 = glm::vec2;
+using Vec3 = glm::vec3;
+using Pos = glm::vec<2, float>;
+using Mat = glm::mat<3, 3, float>;
+
+Pos operator %(Pos base, Pos divisor) {
+    Pos res;
+    res.x = (((int)base.x % (int)divisor.x) + (int)divisor.x) % (int)divisor.x;
+    res.y = (((int)base.y % (int)divisor.y) + (int)divisor.y) % (int)divisor.y;
+    res.x += base.x - floor(base.x);
+    res.y += base.y - floor(base.y);
+    return res;
+}
+
+Pos operator %(Pos base, double divisor) {
+    return base % Pos{ divisor,divisor };
+}
+
+std::ostream& operator<<(std::ostream& os, Pos pos) {
+    os << " ( " << pos.x << " , " << pos.y << " ) ";
+    return os;
+}
+
+Mat get_rot_mat(double angle) {
+    return Mat{
+        {cos(angle), sin(angle), 0.0},
+        { -sin(angle),cos(angle),0.0 },
+        { 0.0,0.0,1.0 }
+    };
+}
+Mat get_delta_mat(Pos delta) {
+    return Mat{
+        {1.0, 0.0, 0.0},
+        { 0.0,1.0,0.0 },
+        { delta.x,delta.y,1.0 }
+    };
+}
+Mat get_scale_mat(Pos scale) {
+    return Mat{
+        {scale.x, 0.0, 0.0},
+        { 0.0,scale.y,0.0 },
+        { 0.0,0.0,1.0 }
+    };
+}
+Mat get_scale_mat(double scale) {
+    return get_scale_mat({ scale,scale });
+}
+
+Pos transform(Mat mat, Pos coor) {
+    Pos res = mat * Vec3{coor.x, coor.y, 1.0};
+    return Pos{res.x, res.y};
+}
+
+Vec2 transform_vec(Mat mat, Vec2 coor) {
+    Vec3 res = mat * Vec3{coor.x, coor.y, 0.0};
+    return Vec2{res.x, res.y};
+}
+
 
 struct Airport{
     const char *name, *abv;
@@ -98,35 +157,70 @@ int main() {
     Context::init();
     ImGui::StyleColorsDark();
     ImGui::GetStyle().Alpha = 0.75;
-    //ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("comic.ttf", 25);
+    ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("comic.ttf", 18);
 
     Context::set_window_title("Tree of Flights");
     Context::set_window_icon("aeroplane.png");
-    //For panning{ moving? } features and zooming
-    glm::vec2 pannedAmt = { Context::get_real_dim().x*0.29f,0.f};
-    glm::vec2 zoomAmt = { 1.6f,0.8f };
-    bool windowHover = false;
 
-    Context::cursor_move_callback = [&](double delx, double dely) {
-        if (Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1) && Context::is_key_pressed(GLFW_KEY_SPACE)) {
-            pannedAmt.x += delx/zoomAmt.x;
-            pannedAmt.y += dely/zoomAmt.y;
+
+    Pos world_scale = { 1.0,1.0 };
+    Pos anchor_world = { 0.0,0.0 };
+    Pos anchor_screen = Context::get_real_dim() * 0.5f;
+    bool is_gui_hover = false;
+
+    auto get_to_scr_mat = [&]() {
+
+        Mat mat = get_scale_mat(1.0);
+
+        //Translate back by world anchor
+        mat = get_delta_mat(-anchor_world) * mat;
+
+        //Scaling
+        mat = get_scale_mat(world_scale) * mat;
+
+        //Converting back to screen size
+        mat = get_scale_mat(Context::get_real_dim() * 0.5f) * mat;
+
+        //Translating back to anchor screen
+        mat = get_delta_mat(anchor_screen) * mat;
+
+        //Translating to center of screen
+        //mat = get_delta_mat(graph_size * 0.5) * mat;
+
+        return mat;
+
+    };
+
+    auto to_world = [&](Pos pos) {
+        auto mat = glm::inverse(get_to_scr_mat());
+        return transform(mat, pos);
+    };
+
+    auto to_screen = [&](Pos pos) {
+        auto mat = get_to_scr_mat();
+        return transform(mat, pos);
+    };
+
+    auto is_in_graph = [&](Pos pos) {
+        return (pos.x >= 0 && pos.y >= 0 &&
+            pos.x <= Context::get_real_dim().x &&
+            pos.y <= Context::get_real_dim().y);
+    };
+    Context::cursor_move_callback = [&](double dx, double dy) {
+        if (is_in_graph(Context::get_mouse_pos()) && !is_gui_hover
+            && Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1)) {
+            anchor_screen += Pos{ dx, dy };
+        }
+    };
+    Context::scroll_callback = [&](double dx, double dy) {
+        if (is_in_graph(Context::get_mouse_pos()) && !is_gui_hover) {
+            anchor_world = to_world(Context::get_mouse_pos());
+            anchor_screen = Context::get_mouse_pos();
+            world_scale *= pow(1.1, dy);
         }
     };
 
-    Context::scroll_callback = [&](double xoff, double yoff) {
-        if(!windowHover)
-            zoomAmt *= pow(1.05, yoff);
-    };
 
-    //Converts given coordinate to screen, i.e , applies pan and zoom
-    auto to_screen = [&](glm::vec2 pos) {
-        return (pos + pannedAmt - Context::get_real_dim() * 0.5f) * zoomAmt + Context::get_real_dim() * 0.5f ;
-    };
-    //Does reverse of above
-    auto to_world = [&](glm::vec2 pos) {
-        return (pos - Context::get_real_dim() * 0.5f) / zoomAmt + Context::get_real_dim() * 0.5f - pannedAmt;
-    };
 
     // bool show = true;
     bool animations = false;
@@ -160,9 +254,9 @@ int main() {
     }
 
     //These are to adjust aspect ratio and offset for background image
-    glm::vec2 back_scale = { 1.f / zoomAmt.x, 1.f / zoomAmt.y };
+    glm::vec2 back_scale = { 1.f / world_scale.x, 1.f / world_scale.y };
     back_scale *= 1.2f;
-    glm::vec2 back_pan = Context::get_real_dim() * 0.5f - pannedAmt*0.85f;
+    glm::vec2 back_pan = Context::get_real_dim() * 0.5f;
 
 #ifdef  NDEBUG
     //Loading time
@@ -199,7 +293,7 @@ int main() {
 #endif
 
 
-        windowHover = false;
+        is_gui_hover = false;
         f_timer.reset();
        
         Context::init_rendering(Color::silver);
@@ -208,7 +302,7 @@ int main() {
             .center = to_screen(back_pan),
             .size = {nepal_tex.width, nepal_tex.height},
             .color = Color::white,
-            .scale = zoomAmt * back_scale
+            .scale = world_scale * back_scale
         }.draw(nepal_tex);
         // imgui window
         {
@@ -217,7 +311,7 @@ int main() {
             ImGui::Begin("Hello!",0, windowFlags);
             ImGui::SetWindowFontScale(1.5);
 
-            windowHover |= ImGui::IsWindowHovered();
+            is_gui_hover |= ImGui::IsWindowHovered();
 
             ImGui::Combo("Using?", &selection, algoOptions, sizeof(algoOptions)/sizeof(*algoOptions),-1);
             if(selection == 1)
@@ -297,13 +391,13 @@ int main() {
             ImGui::Text("Path cost: %u",cost);
             uint32_t dist = 0; 
             if(ImGui::CollapsingHeader("Path Details",ImGuiTreeNodeFlags_Framed)){
-                windowHover |= ImGui::IsItemHovered();
+                is_gui_hover |= ImGui::IsItemHovered();
                 if(!path.edges.isEmpty()){
                     // int tableFlags = 0;
                     int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
                     ImGui::SetWindowFontScale(1.5);
                     if (ImGui::BeginTable("split", 4, tableFlags)){
-                        windowHover |= ImGui::IsItemHovered();
+                        is_gui_hover |= ImGui::IsItemHovered();
 
                         ImGui::TableSetupColumn("   FROM   ");
                         ImGui::TableSetupColumn(" ");
