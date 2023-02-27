@@ -163,9 +163,9 @@ int main() {
     Context::set_window_icon("aeroplane.png");
 
 
-    Pos world_scale = { 1.0,1.0 };
+    Pos world_scale = { 0.0019,0.0019 };
     Pos anchor_world = { 0.0,0.0 };
-    Pos anchor_screen = Context::get_real_dim() * 0.5f;
+    Pos anchor_screen = { 0.f,0.f };
     bool is_gui_hover = false;
 
     auto get_to_scr_mat = [&]() {
@@ -183,9 +183,6 @@ int main() {
 
         //Translating back to anchor screen
         mat = get_delta_mat(anchor_screen) * mat;
-
-        //Translating to center of screen
-        //mat = get_delta_mat(graph_size * 0.5) * mat;
 
         return mat;
 
@@ -255,8 +252,8 @@ int main() {
 
     //These are to adjust aspect ratio and offset for background image
     glm::vec2 back_scale = { 1.f / world_scale.x, 1.f / world_scale.y };
-    back_scale *= 1.2f;
-    glm::vec2 back_pan = Context::get_real_dim() * 0.5f;
+    back_scale *= 1.4f;
+    glm::vec2 back_pan = to_world(Context::get_real_dim() * 0.5f);
 
 #ifdef  NDEBUG
     //Loading time
@@ -323,6 +320,7 @@ int main() {
             if (animations) {
                 float speed = path_rate;
                 ImGui::SliderFloat("Adjust Speed", &speed, 0.1f, 2.f);
+                is_gui_hover |= ImGui::IsWindowHovered();
                 path_rate = speed;
             }
             ImGui::NewLine();
