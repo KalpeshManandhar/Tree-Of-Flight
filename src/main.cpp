@@ -224,7 +224,7 @@ int main() {
     int selection= 0;
     int heuristicSelected= 0;
     const char *algoOptions[] = {"Dijkstra", "A*", "BFS", "DFS"};
-    const char *heuristicOptions[] = {"Zero", "Euclidean distance", "TaxiCab distance"};
+    const char *heuristicOptions[] = {"Zero", "Euclidean distance", "Manhattan distance"};
     Timer f_timer;
     f_timer.reset();
 
