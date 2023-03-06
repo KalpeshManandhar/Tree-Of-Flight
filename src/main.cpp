@@ -4,40 +4,16 @@
 #endif
 #endif
 
+#include <fstream>
 
-#include <iostream>
-#include <chrono>
+#include "timers.hpp"
 
 #include "graph.h"
 #include "file.h"
 #include "throwaway.h"
 #include "renderers.hpp"
 
-#define DataFilePath "./data/nepal.csv"
-
-
-
-class Timer
-{
-private:
-    // Type aliases to make accessing nested type easier
-    using Clock = std::chrono::steady_clock;
-    using Second = std::chrono::duration<double, std::ratio<1> >;
-
-    std::chrono::time_point<Clock> m_beg{ Clock::now() };
-
-public:
-    void reset()
-    {
-        m_beg = Clock::now();
-    }
-
-    double elapsed() const
-    {
-        return std::chrono::duration_cast<Second>(Clock::now() - m_beg).count();
-    }
-};
-
+#define DataFilePath "./data/airportdata.csv"
 
 using Vec2 = glm::vec2;
 using Vec3 = glm::vec3;
@@ -159,7 +135,9 @@ int main() {
     GraphNode<Airport> *start = &noSelection, *end= &noSelection;
     uint32_t cost = 0;
 
-    
+    //Log file setup
+    std::ofstream log_file("log_file.log", std::ios::app | std::ios::out);
+    log_file << LOG_FILE_DATE_TIME;
 
     Context::init();
     ImGui::StyleColorsDark();
@@ -205,19 +183,19 @@ int main() {
         return transform(mat, pos);
     };
 
-    auto is_in_graph = [&](Pos pos) {
+    auto is_in_screen = [&](Pos pos) {
         return (pos.x >= 0 && pos.y >= 0 &&
             pos.x <= Context::get_real_dim().x &&
             pos.y <= Context::get_real_dim().y);
     };
     Context::cursor_move_callback = [&](double dx, double dy) {
-        if (is_in_graph(Context::get_mouse_pos()) && !is_gui_hover
+        if (is_in_screen(Context::get_mouse_pos()) && !is_gui_hover
             && Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1)) {
             anchor_screen += Pos{ dx, dy };
         }
     };
     Context::scroll_callback = [&](double dx, double dy) {
-        if (is_in_graph(Context::get_mouse_pos()) && !is_gui_hover) {
+        if (is_in_screen(Context::get_mouse_pos()) && !is_gui_hover) {
             anchor_world = to_world(Context::get_mouse_pos());
             anchor_screen = Context::get_mouse_pos();
             world_scale *= pow(1.1, dy);
@@ -262,6 +240,12 @@ int main() {
     back_scale *= 1.4f;
     glm::vec2 back_pan = to_world(Context::get_real_dim() * 0.5f);
 
+
+
+    //Timer purpose analyzer
+    Analyzer alz = MAKE_ANALYZER(General_Analyzer);
+
+
 #ifdef  NDEBUG
     //Loading time
     const double load_time = 3.0;
@@ -269,7 +253,6 @@ int main() {
 #endif //  NDEBUG
     while (!Context::poll_events_and_decide_quit()){
         double f_time = f_timer.elapsed();
-        printf("Frame time: %lf\n", f_time);
 #ifdef NDEBUG
         if (loading) {
             if (f_time > load_time)
@@ -302,6 +285,7 @@ int main() {
         f_timer.reset();
        
         Context::init_rendering(Color::silver);
+
 
         Context::Rectangle{
             .center = to_screen(back_pan),
@@ -465,19 +449,33 @@ int main() {
         }
 
 
+
         //First draw lines
+
+        auto to_scr_mat = get_to_scr_mat();
+
+
+        
         while (auto port = ports.nodes.iterate()) {
 
             while (auto edge = port->data->neighbours.iterate()) {
                 auto to = edge->data.to;
+
+                glm::vec2 pos1 = transform(to_scr_mat, { port->data->data.pos.x, port->data->data.pos.y });
+                glm::vec2 pos2 = transform(to_scr_mat, { to->data.pos.x, to->data.pos.y });
+
+                if (!is_in_screen(pos1) && !is_in_screen(pos2))
+                    continue;
+
                 Context::Line{
-                    to_screen({port->data->data.pos.x, port->data->data.pos.y}),
-                    to_screen({to->data.pos.x, to->data.pos.y}),
+                    pos1,
+                    pos2,
                     Color::gray,
                     1
                 }.draw();
             }
         }
+        
 
 
         int visit_number = curr_path;
@@ -551,24 +549,27 @@ int main() {
 
         //Now draw icons
 
+
         while (auto port = ports.nodes.iterate()){
-            Vec2 b = { port->data->data.pos.x, port->data->data.pos.y };
+            Vec2 b = transform(to_scr_mat, { port->data->data.pos.x, port->data->data.pos.y });
+            if (!is_in_screen(b))
+                continue;
             if (port->data == start) {
                 Context::Circle{
-                    .center = to_screen({b.x, b.y}) ,
+                    .center = b ,
                     .radius = 25,
                     .color = Color::red2
                 }.draw(rest_tex);
             }
             else if (port->data == end)
                 Context::Circle{
-                    .center = to_screen({b.x, b.y}),
+                    .center = b,
                     .radius = 25,
                     .color = Color::emerald
             }.draw(rest_tex);
             else
                 Context::Circle{
-                    .center = to_screen({b.x, b.y}),
+                    .center = b,
                     .radius = 23,
                     .color = Color::blackOlive
             }.draw(rest_tex);
@@ -577,7 +578,13 @@ int main() {
 
 
         Context::finish_rendering();
+
+        alz.loop();
+
     }
+
+    log_file << alz;
+
     Context::clean();
     return 0;
 }

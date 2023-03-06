@@ -4,3 +4,7 @@
 .vscode
 *.exe
 *.pdb
+*.log
+*.iobj
+*.ipdb
+*.ilk
