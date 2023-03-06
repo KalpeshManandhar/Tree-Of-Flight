@@ -21,6 +21,8 @@ using Vec3 = glm::vec3;
 using Pos = glm::vec<2, float>;
 using Mat = glm::mat<3, 3, float>;
 
+// using Edge = GraphEdge<Airport>;
+
 Pos operator %(Pos base, Pos divisor) {
     Pos res;
     res.x = (((int)base.x % (int)divisor.x) + (int)divisor.x) % (int)divisor.x;
@@ -82,6 +84,8 @@ struct Airport{
     uint32_t flights;
 };
 
+using Node = GraphNode<Airport>;
+
 uint32_t Euclidean(GraphNode<Airport>*start, GraphNode<Airport>*end){
     return((uint32_t)glm::distance(start->data.pos, end->data.pos));
 }
@@ -109,54 +113,71 @@ int main() {
         a.pos.x = a.latitude/180 * Context::get_real_dim().x;
         a.pos.y = a.longitude/90 * Context::get_real_dim().y;
         a.flights = getRandom() % 2 +1;
-        ports.addNode(newGraphNode(a));
+        
+        auto newNode = newGraphNode(a);
+        ports.addNode(newNode);
     }
+
+
     uint32_t maxWt = 0;
     uint32_t minWt = UINT32_MAX;
-     while (auto port= ports.nodes.iterate()) {
-         for (int i = 0;i < port->data->data.flights;i++) {
-             int j = getRandom()%ports.size;
-             auto to = ports.nodes.search(j);
-             uint32_t wt = getRandom() % 4 + 1;
-             if (wt > maxWt)
-                 maxWt = wt;
-             if (wt < minWt)
-                 minWt = wt;
-             ports.addEdge(port->data, to->data,wt );
-         }
-     }
+    /*while (auto port= ports.nodes.iterate()) {
+        for (int i = 0;i < port->data->data.flights;i++) {
+            int j = getRandom()%ports.size;
+            auto to = ports.nodes.search(j);
+            uint32_t wt = getRandom() % 4 + 1;
+            if (wt > maxWt)
+                maxWt = wt;
+            if (wt < minWt)
+                minWt = wt;
+            ports.addEdge(port->data, to->data,wt );
+        }
+    }*/
 
     // flights
-    if(false)
     {
-        
         char *flights = loadFileToBuffer(FlightFilePath);
         int curs = 0;
         GraphNode<Airport> *current = NULL;
+        Timer t;
+        Timer t1;
+        t1.reset();
+        int i = 0;
         while(flights[curs]){
             if (flights[curs] == '#'){
                 const char *from = parseString_fixedLength(flights, ++curs, 3);
+                
                 auto found = ports.nodes.search(
-                    [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
+                    [&](ListNode<Node *> *node, int)->bool{
                         return (strcmp(from, node->data->data.abv) == 0);
                     }
                 );
+                printf("Search time %d: %lf\n", i++, t.elapsed());
                 if (found){
                     current = found->data;
                 }
             }
             else if (flights[curs] == '.'){
                 const char *to = parseString_fixedLength(flights, ++curs, 3);
+
                 auto found = ports.nodes.search(
-                    [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
+                    [&](ListNode<Node*>* node, int)->bool {
                         return (strcmp(to, node->data->data.abv) == 0);
                     }
                 );
-                if (found){
-                    ports.addEdge(current, found->data);
+                printf("Search time %d: %lf\n", i++, t.elapsed());
+                if (found) {
+                    uint32_t wt = getRandom() % 4 + 1;
+                    if (wt > maxWt)
+                        maxWt = wt;
+                    if (wt < minWt)
+                        minWt = wt;
+                    ports.addEdge(current, found->data, wt);
                 }
             }
+            curs++;
         }
+
         delete[] flights;
     }
 
@@ -166,6 +187,7 @@ int main() {
     noSelection.data.name = "--------";
     noSelection.data.abv = "";
     GraphNode<Airport> *start = &noSelection, *end= &noSelection;
+    GraphNode<Airport> *current = NULL;
     uint32_t cost = 0;
 
     //Log file setup
@@ -238,6 +260,9 @@ int main() {
             world_scale *= pow(1.1, dy);
         }
     };
+
+
+    
 
 
 
@@ -349,7 +374,7 @@ int main() {
             if (animations) {
                 float speed = path_rate;
                 ImGui::SliderFloat("Adjust Speed", &speed, 0.1f, 2.f);
-                is_gui_hover |= ImGui::IsWindowHovered();
+                is_gui_hover |= ImGui::IsAnyItemHovered();
                 path_rate = speed;
             }
             ImGui::NewLine();
@@ -420,7 +445,44 @@ int main() {
             ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
             ImGui::NewLine();
             ImGui::Text("Path cost: %u",cost);
-            uint32_t dist = 0; 
+
+            // currently selected node
+            if (ImGui::CollapsingHeader("Currently selected", ImGuiTreeNodeFlags_Framed)){
+                if (current){
+                    ImGui::Text("Name:    \t%s", current->data.name);
+                    ImGui::Text("Country: \t%s", current->data.country);
+                    ImGui::Text("Code:    \t%s", current->data.abv);
+                    
+                    ImGui::CollapsingHeader("Flights",ImGuiTreeNodeFlags_Framed);
+
+                    int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
+                    if (ImGui::BeginTable("flight", 4, tableFlags)){
+                        is_gui_hover |= ImGui::IsItemHovered();
+
+                        ImGui::TableSetupColumn("   FROM   ");
+                        ImGui::TableSetupColumn(" ");
+                        ImGui::TableSetupColumn("   TO   ");
+                        ImGui::TableSetupColumn("   COST   ");
+                        ImGui::TableHeadersRow();
+
+                        while(auto edge = current->neighbours.iterate()){
+                            auto flight = edge->data;
+                            auto to = flight.to;
+                            ImGui::TableNextColumn(); ImGui::Text("    %s   ", current->data.abv);
+                            ImGui::TableNextColumn(); ImGui::Text(" -- ");
+                            ImGui::TableNextColumn(); ImGui::Text("    %s   ", to->data.abv);
+                            ImGui::TableNextColumn(); ImGui::Text("    %d   ", flight.weight);
+                            // ImGui::TableNextRow();
+                        }
+                        ImGui::EndTable();
+                    }
+                }
+
+            }
+
+
+
+
             if(ImGui::CollapsingHeader("Path Details",ImGuiTreeNodeFlags_Framed)){
                 is_gui_hover |= ImGui::IsItemHovered();
                 if(!path.edges.isEmpty()){
@@ -444,7 +506,6 @@ int main() {
                             ImGui::TableNextColumn(); ImGui::Text("    %s   ", to->data.abv);
                             ImGui::TableNextColumn(); ImGui::Text("    %d   ", edge->data->weight);
                             // ImGui::TableNextRow();
-                            dist += glm::distance(st->data.pos, to->data.pos);
                             st = to;
                         }
                         ImGui::EndTable();

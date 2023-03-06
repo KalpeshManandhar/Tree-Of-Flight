@@ -1,5 +1,6 @@
 #include "ds.h"
 
+
 #define MIN(a,b) ((a<b)?a:b)
 
 template <typename T>
@@ -45,8 +46,8 @@ struct Graph{
     using Edge = GraphEdge<T>;
     using Path = Path<T>;
     // list of nodes
-    LinkedList<Node *> nodes;
     uint32_t size;
+    LinkedList<Node *> nodes;
 
     Graph():size(0){}
 
