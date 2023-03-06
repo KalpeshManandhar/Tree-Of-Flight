@@ -13,6 +13,8 @@
 #include "throwaway.h"
 #include "renderers.hpp"
 
+#define DataFilePath "./data/nepal.csv"
+
 
 
 class Timer
@@ -117,7 +119,7 @@ uint32_t zeroHeuristic(GraphNode<Airport> *start, GraphNode<Airport> *end){
 
 int main() {
 
-    char* buffer = loadFileToBuffer("data/airportdata.csv");
+    char* buffer = loadFileToBuffer(DataFilePath);
     Graph<Airport> ports;
     int cursor = 0;
     while (buffer[cursor]) {
@@ -128,8 +130,8 @@ int main() {
         a.abv = parseString_fixedLength(buffer, cursor, 3);
         a.latitude = parseFloat(buffer, cursor);
         a.longitude = parseFloat(buffer,cursor);
-        a.pos.x = getRandom();
-        a.pos.y = getRandom();
+        a.pos.x = a.latitude/180 * Context::get_real_dim().x;
+        a.pos.y = a.longitude/90 * Context::get_real_dim().y;
         a.flights = getRandom() % 2 +1;
         ports.addNode(newGraphNode(a));
     }
@@ -162,7 +164,7 @@ int main() {
     Context::init();
     ImGui::StyleColorsDark();
     ImGui::GetStyle().Alpha = 0.75;
-    ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("comic.ttf", 18);
+    // ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("comic.ttf", 18);
 
     Context::set_window_title("Tree of Flights");
     Context::set_window_icon("aeroplane.png");
@@ -267,6 +269,7 @@ int main() {
 #endif //  NDEBUG
     while (!Context::poll_events_and_decide_quit()){
         double f_time = f_timer.elapsed();
+        printf("Frame time: %lf\n", f_time);
 #ifdef NDEBUG
         if (loading) {
             if (f_time > load_time)
