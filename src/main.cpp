@@ -14,6 +14,7 @@
 #include "renderers.hpp"
 
 #define DataFilePath "./data/airportdata.csv"
+#define FlightFilePath "./data/flights.csv"
 
 using Vec2 = glm::vec2;
 using Vec3 = glm::vec3;
@@ -100,7 +101,6 @@ int main() {
     int cursor = 0;
     while (buffer[cursor]) {
         Airport a;
-        // country
         a.country = parseStringDelimited(buffer, cursor,',');
         a.name = parseStringDelimited(buffer, cursor,',');
         a.abv = parseString_fixedLength(buffer, cursor, 3);
@@ -113,19 +113,52 @@ int main() {
     }
     uint32_t maxWt = 0;
     uint32_t minWt = UINT32_MAX;
-    while (auto port= ports.nodes.iterate()) {
-        for (int i = 0;i < port->data->data.flights;i++) {
-            int j = getRandom()%ports.size;
-            auto to = ports.nodes.search(j);
-            uint32_t wt = getRandom() % 4 + 1;
-            if (wt > maxWt)
-                maxWt = wt;
-            if (wt < minWt)
-                minWt = wt;
-            ports.addEdge(port->data, to->data,wt );
-        }
-    }
+     while (auto port= ports.nodes.iterate()) {
+         for (int i = 0;i < port->data->data.flights;i++) {
+             int j = getRandom()%ports.size;
+             auto to = ports.nodes.search(j);
+             uint32_t wt = getRandom() % 4 + 1;
+             if (wt > maxWt)
+                 maxWt = wt;
+             if (wt < minWt)
+                 minWt = wt;
+             ports.addEdge(port->data, to->data,wt );
+         }
+     }
 
+    // flights
+    if(false)
+    {
+        
+        char *flights = loadFileToBuffer(FlightFilePath);
+        int curs = 0;
+        GraphNode<Airport> *current = NULL;
+        while(flights[curs]){
+            if (flights[curs] == '#'){
+                const char *from = parseString_fixedLength(flights, ++curs, 3);
+                auto found = ports.nodes.search(
+                    [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
+                        return (strcmp(from, node->data->data.abv) == 0);
+                    }
+                );
+                if (found){
+                    current = found->data;
+                }
+            }
+            else if (flights[curs] == '.'){
+                const char *to = parseString_fixedLength(flights, ++curs, 3);
+                auto found = ports.nodes.search(
+                    [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
+                        return (strcmp(to, node->data->data.abv) == 0);
+                    }
+                );
+                if (found){
+                    ports.addEdge(current, found->data);
+                }
+            }
+        }
+        delete[] flights;
+    }
 
     Path<Airport> path;
     
@@ -137,7 +170,7 @@ int main() {
 
     //Log file setup
     std::ofstream log_file("log_file.log", std::ios::app | std::ios::out);
-    log_file << LOG_FILE_DATE_TIME;
+    //log_file << LOG_FILE_DATE_TIME;
 
     Context::init();
     ImGui::StyleColorsDark();
@@ -324,7 +357,7 @@ int main() {
             if (ImGui::Button("Select start")){
                 //Change the mouse click callback to set start node to clicked mouse position
                 Context::mouse_click_callback = [&](int button, int action, int mods) {
-                    if (!mouse_dragged && action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
+                    if (!is_gui_hover && !mouse_dragged && action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
                         glm::vec2 mpos = Context::get_mouse_pos();
                         
                         float search_radius = 25;
@@ -343,7 +376,7 @@ int main() {
             if (ImGui::Button("Select end")){
                 //Change the mouse click callback to set start node to clicked mouse position
                 Context::mouse_click_callback = [&](int button, int action, int mods) {
-                    if (!mouse_dragged && action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
+                    if (!is_gui_hover && !mouse_dragged && action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
                         glm::vec2 mpos = Context::get_mouse_pos();
                         float search_radius = 25;
                         auto node = ports.nodes.search(
