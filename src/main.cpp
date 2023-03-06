@@ -188,11 +188,15 @@ int main() {
             pos.x <= Context::get_real_dim().x &&
             pos.y <= Context::get_real_dim().y);
     };
+    bool mouse_dragged = false;
     Context::cursor_move_callback = [&](double dx, double dy) {
         if (is_in_screen(Context::get_mouse_pos()) && !is_gui_hover
             && Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1)) {
             anchor_screen += Pos{ dx, dy };
+            mouse_dragged = true;
         }
+        else
+            mouse_dragged = false;
     };
     Context::scroll_callback = [&](double dx, double dy) {
         if (is_in_screen(Context::get_mouse_pos()) && !is_gui_hover) {
@@ -320,34 +324,38 @@ int main() {
             if (ImGui::Button("Select start")){
                 //Change the mouse click callback to set start node to clicked mouse position
                 Context::mouse_click_callback = [&](int button, int action, int mods) {
-                    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
+                    if (!mouse_dragged && action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
                         glm::vec2 mpos = Context::get_mouse_pos();
-                        mpos = to_world(mpos);
+                        
                         float search_radius = 25;
                         auto node = ports.nodes.search(
                             [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
-                                return glm::distance(mpos, { node->data->data.pos.x,node->data->data.pos.y }) < search_radius;
+                                return glm::distance(mpos,
+                                    to_screen({ node->data->data.pos.x,node->data->data.pos.y })) < search_radius;
                             }
                         );
                         if (node)
                             start = node->data;
                     }
+                    mouse_dragged = false;
                 };
             }
             if (ImGui::Button("Select end")){
                 //Change the mouse click callback to set start node to clicked mouse position
                 Context::mouse_click_callback = [&](int button, int action, int mods) {
-                    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
+                    if (!mouse_dragged && action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
                         glm::vec2 mpos = Context::get_mouse_pos();
-                        mpos = to_world(mpos);
                         float search_radius = 25;
                         auto node = ports.nodes.search(
-                            [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
-                                return glm::distance(mpos, { node->data->data.pos.x,node->data->data.pos.y }) < search_radius;
+                            [&](ListNode<GraphNode<Airport>*>* node, int)->bool
+                            {
+                                return glm::distance(mpos,
+                                to_screen({ node->data->data.pos.x,node->data->data.pos.y })) < search_radius;
                             }
                         );
                         if (node)
                             end = node->data;
+                        mouse_dragged = false;
                     }
                 };
             }
