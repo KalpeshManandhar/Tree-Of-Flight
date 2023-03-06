@@ -12,68 +12,14 @@
 #include "file.h"
 #include "throwaway.h"
 #include "renderers.hpp"
+#include "math.h"
 
 #define DataFilePath "./data/airportdata.csv"
 #define FlightFilePath "./data/flights.csv"
 
-using Vec2 = glm::vec2;
-using Vec3 = glm::vec3;
-using Pos = glm::vec<2, float>;
-using Mat = glm::mat<3, 3, float>;
-
-// using Edge = GraphEdge<Airport>;
-
-Pos operator %(Pos base, Pos divisor) {
-    Pos res;
-    res.x = (((int)base.x % (int)divisor.x) + (int)divisor.x) % (int)divisor.x;
-    res.y = (((int)base.y % (int)divisor.y) + (int)divisor.y) % (int)divisor.y;
-    res.x += base.x - floor(base.x);
-    res.y += base.y - floor(base.y);
-    return res;
-}
-
-Pos operator %(Pos base, double divisor) {
-    return base % Pos{ divisor,divisor };
-}
-
 std::ostream& operator<<(std::ostream& os, Pos pos) {
     os << " ( " << pos.x << " , " << pos.y << " ) ";
     return os;
-}
-
-Mat get_rot_mat(double angle) {
-    return Mat{
-        {cos(angle), sin(angle), 0.0},
-        { -sin(angle),cos(angle),0.0 },
-        { 0.0,0.0,1.0 }
-    };
-}
-Mat get_delta_mat(Pos delta) {
-    return Mat{
-        {1.0, 0.0, 0.0},
-        { 0.0,1.0,0.0 },
-        { delta.x,delta.y,1.0 }
-    };
-}
-Mat get_scale_mat(Pos scale) {
-    return Mat{
-        {scale.x, 0.0, 0.0},
-        { 0.0,scale.y,0.0 },
-        { 0.0,0.0,1.0 }
-    };
-}
-Mat get_scale_mat(double scale) {
-    return get_scale_mat({ scale,scale });
-}
-
-Pos transform(Mat mat, Pos coor) {
-    Pos res = mat * Vec3{coor.x, coor.y, 1.0};
-    return Pos{res.x, res.y};
-}
-
-Vec2 transform_vec(Mat mat, Vec2 coor) {
-    Vec3 res = mat * Vec3{coor.x, coor.y, 0.0};
-    return Vec2{res.x, res.y};
 }
 
 
@@ -83,8 +29,8 @@ struct Airport{
     float latitude, longitude;
     uint32_t flights;
 };
-
 using Node = GraphNode<Airport>;
+
 
 uint32_t Euclidean(GraphNode<Airport>*start, GraphNode<Airport>*end){
     return((uint32_t)glm::distance(start->data.pos, end->data.pos));
@@ -100,8 +46,8 @@ uint32_t zeroHeuristic(GraphNode<Airport> *start, GraphNode<Airport> *end){
 
 int main() {
 
-    char* buffer = loadFileToBuffer(DataFilePath);
     Graph<Airport> ports;
+    char* buffer = loadFileToBuffer(DataFilePath);
     int cursor = 0;
     while (buffer[cursor]) {
         Airport a;
@@ -110,8 +56,8 @@ int main() {
         a.abv = parseString_fixedLength(buffer, cursor, 3);
         a.latitude = parseFloat(buffer, cursor);
         a.longitude = parseFloat(buffer,cursor);
-        a.pos.x = a.latitude/180 * Context::get_real_dim().x;
-        a.pos.y = a.longitude/90 * Context::get_real_dim().y;
+        a.pos.x = a.longitude/360 * Context::get_real_dim().x;
+        a.pos.y = a.latitude/90 * Context::get_real_dim().y;
         a.flights = getRandom() % 2 +1;
         
         auto newNode = newGraphNode(a);
@@ -121,24 +67,11 @@ int main() {
 
     uint32_t maxWt = 0;
     uint32_t minWt = UINT32_MAX;
-    /*while (auto port= ports.nodes.iterate()) {
-        for (int i = 0;i < port->data->data.flights;i++) {
-            int j = getRandom()%ports.size;
-            auto to = ports.nodes.search(j);
-            uint32_t wt = getRandom() % 4 + 1;
-            if (wt > maxWt)
-                maxWt = wt;
-            if (wt < minWt)
-                minWt = wt;
-            ports.addEdge(port->data, to->data,wt );
-        }
-    }*/
-
     // flights
     {
         char *flights = loadFileToBuffer(FlightFilePath);
         int curs = 0;
-        GraphNode<Airport> *current = NULL;
+        GraphNode<Airport> *currentAirport = NULL;
         Timer t;
         Timer t1;
         t1.reset();
@@ -154,7 +87,7 @@ int main() {
                 );
                 printf("Search time %d: %lf\n", i++, t.elapsed());
                 if (found){
-                    current = found->data;
+                    currentAirport = found->data;
                 }
             }
             else if (flights[curs] == '.'){
@@ -167,27 +100,43 @@ int main() {
                 );
                 printf("Search time %d: %lf\n", i++, t.elapsed());
                 if (found) {
-                    uint32_t wt = getRandom() % 4 + 1;
-                    if (wt > maxWt)
-                        maxWt = wt;
-                    if (wt < minWt)
-                        minWt = wt;
-                    ports.addEdge(current, found->data, wt);
+                    bool isRepeated = false;
+                    while (auto toNodes = currentAirport->neighbours.iterate()){
+                        if (found->data == toNodes->data.to)
+                            isRepeated = true;
+                    }
+                    // only add edge if connection previously doesnt exist
+                    if (!isRepeated){
+                        uint32_t wt = getRandom() % 4 + 1;
+                        if (wt > maxWt)
+                            maxWt = wt;
+                        if (wt < minWt)
+                            minWt = wt;
+                        ports.addEdge(currentAirport, found->data, wt);
+                        currentAirport->data.flights++;
+                    }
                 }
             }
             curs++;
         }
-
         delete[] flights;
     }
 
-    Path<Airport> path;
-    
-    GraphNode<Airport> noSelection;
+    // the found path
+    Path<Airport> path;        
+
+    // placeholder values when no start/end airports
+    GraphNode<Airport> noSelection;     
     noSelection.data.name = "--------";
     noSelection.data.abv = "";
+
+    // start and end airports for pathfinding
     GraphNode<Airport> *start = &noSelection, *end= &noSelection;
-    GraphNode<Airport> *current = NULL;
+
+    // currently selected airport
+    GraphNode<Airport> *currentAirport = NULL;
+
+    // cost of the returned path
     uint32_t cost = 0;
 
     //Log file setup
@@ -199,8 +148,8 @@ int main() {
     ImGui::GetStyle().Alpha = 0.75;
     // ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("comic.ttf", 18);
 
-    Context::set_window_title("Tree of Flights");
-    Context::set_window_icon("aeroplane.png");
+    Context::set_window_title("Tree of Flight");
+    // Context::set_window_icon("aeroplane.png");
 
 
     Pos world_scale = { 0.0019,0.0019 };
@@ -209,7 +158,6 @@ int main() {
     bool is_gui_hover = false;
 
     auto get_to_scr_mat = [&]() {
-
         Mat mat = get_scale_mat(1.0);
 
         //Translate back by world anchor
@@ -225,7 +173,6 @@ int main() {
         mat = get_delta_mat(anchor_screen) * mat;
 
         return mat;
-
     };
 
     auto to_world = [&](Pos pos) {
@@ -253,6 +200,7 @@ int main() {
         else
             mouse_dragged = false;
     };
+
     Context::scroll_callback = [&](double dx, double dy) {
         if (is_in_screen(Context::get_mouse_pos()) && !is_gui_hover) {
             anchor_world = to_world(Context::get_mouse_pos());
@@ -261,17 +209,36 @@ int main() {
         }
     };
 
+    // callback for mouseclick: selects an airport as currentAirport
+    Context::mouse_click_callback = [&](int button, int action, int mods) {
+        if (!is_gui_hover && !mouse_dragged && action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
+            Vec2 mpos = Context::get_mouse_pos();
+            
+            float search_radius = 25;
+            auto node = ports.nodes.search(
+                [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
+                    return glm::distance(mpos,
+                        to_screen({ node->data->data.pos.x,node->data->data.pos.y })) < search_radius;
+                }
+            );
+            if (node)
+                currentAirport = node->data;
+        }
+        mouse_dragged = false;
+    };
 
-    
 
 
-
-    // bool show = true;
+    // animations off/on
     bool animations = false;
-    int selection= 0;
-    int heuristicSelected= 0;
+
+    // selected algorithm/heuristic indexes + options
+    int algoSelected= 0;
     const char *algoOptions[] = {"Dijkstra", "A*", "BFS", "DFS"};
+    int heuristicSelected= 0;
     const char *heuristicOptions[] = {"Zero", "Euclidean distance", "Manhattan distance"};
+    
+    
     Timer f_timer;
     f_timer.reset();
 
@@ -298,9 +265,9 @@ int main() {
     }
 
     //These are to adjust aspect ratio and offset for background image
-    glm::vec2 back_scale = { 1.f / world_scale.x, 1.f / world_scale.y };
+    Vec2 back_scale = { 1.f / world_scale.x, 1.f / world_scale.y };
     back_scale *= 1.4f;
-    glm::vec2 back_pan = to_world(Context::get_real_dim() * 0.5f);
+    Vec2 back_pan = to_world(Context::get_real_dim() * 0.5f);
 
 
 
@@ -348,13 +315,17 @@ int main() {
        
         Context::init_rendering(Color::silver);
 
-
+        // [BACKGROUND]
+        // map
         Context::Rectangle{
             .center = to_screen(back_pan),
             .size = {nepal_tex.width, nepal_tex.height},
             .color = Color::white,
             .scale = world_scale * back_scale
         }.draw(nepal_tex);
+
+
+        // [UI]
         // imgui window
         {
             int windowFlags = 0;
@@ -363,60 +334,66 @@ int main() {
             ImGui::SetWindowFontScale(1.5);
 
             is_gui_hover |= ImGui::IsWindowHovered();
+            is_gui_hover |= ImGui::IsAnyItemHovered();
 
-            ImGui::Combo("Using?", &selection, algoOptions, sizeof(algoOptions)/sizeof(*algoOptions),-1);
-            if(selection == 1)
-                ImGui::Combo("Heuristic?", &heuristicSelected, heuristicOptions, sizeof(heuristicOptions)/sizeof(*heuristicOptions), -1);
-            ImGui::Text("Current: %d ",selection);
-            ImGui::Text("From: \t%s %s\t",start->data.name, start->data.abv);
-            ImGui::Text("To:   \t%s %s\t",end->data.name, end->data.abv);
-            ImGui::Checkbox("Animations", &animations);
-            if (animations) {
-                float speed = path_rate;
-                ImGui::SliderFloat("Adjust Speed", &speed, 0.1f, 2.f);
-                is_gui_hover |= ImGui::IsAnyItemHovered();
-                path_rate = speed;
-            }
+            // currently selected node
+            if (ImGui::CollapsingHeader("Currently selected", ImGuiTreeNodeFlags_Framed)){
+                if (currentAirport){
+                    ImGui::Text("Name:    \t%s", currentAirport->data.name);
+                    ImGui::Text("Country: \t%s", currentAirport->data.country);
+                    ImGui::Text("Code:    \t%s", currentAirport->data.abv);
+                    
+                    if (ImGui::Button("Set as start")){
+                        start = currentAirport;
+                    }
+                    ImGui::SameLine(0, 15);
+                    if (ImGui::Button("Set as end")){
+                        end = currentAirport;
+                    }
+
+                    if(ImGui::CollapsingHeader("Flights",ImGuiTreeNodeFlags_Framed)){
+                        int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
+                        if (ImGui::BeginTable("flight", 4, tableFlags)){
+
+                            ImGui::TableSetupColumn("   FROM   ");
+                            ImGui::TableSetupColumn(" ");
+                            ImGui::TableSetupColumn("   TO   ");
+                            ImGui::TableSetupColumn("   COST   ");
+                            ImGui::TableHeadersRow();
+
+                            while(auto edge = currentAirport->neighbours.iterate()){
+                                auto flight = edge->data;
+                                auto to = flight.to;
+                                ImGui::TableNextColumn(); ImGui::Text("    %s   ", currentAirport->data.abv);
+                                ImGui::TableNextColumn(); ImGui::Text(" -- ");
+                                ImGui::TableNextColumn(); ImGui::Text("    %s   ", to->data.abv);
+                                ImGui::TableNextColumn(); ImGui::Text("    %d   ", flight.weight);
+                                // ImGui::TableNextRow();
+                            }
+                            ImGui::EndTable();
+                        }
+                    }
+                }
+                ImGui::NewLine();
+            } 
             ImGui::NewLine();
 
-            if (ImGui::Button("Select start")){
-                //Change the mouse click callback to set start node to clicked mouse position
-                Context::mouse_click_callback = [&](int button, int action, int mods) {
-                    if (!is_gui_hover && !mouse_dragged && action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
-                        glm::vec2 mpos = Context::get_mouse_pos();
-                        
-                        float search_radius = 25;
-                        auto node = ports.nodes.search(
-                            [&](ListNode<GraphNode<Airport>*>* node, int)->bool {
-                                return glm::distance(mpos,
-                                    to_screen({ node->data->data.pos.x,node->data->data.pos.y })) < search_radius;
-                            }
-                        );
-                        if (node)
-                            start = node->data;
-                    }
-                    mouse_dragged = false;
-                };
+
+            {
+                ImGui::CollapsingHeader("Algorithm details", ImGuiTreeNodeFlags_Framed);
+                ImGui::Combo("Using?", &algoSelected, algoOptions, sizeof(algoOptions)/sizeof(*algoOptions),-1);
+                if(algoSelected == 1)
+                    ImGui::Combo("Heuristic?", &heuristicSelected, heuristicOptions, sizeof(heuristicOptions)/sizeof(*heuristicOptions), -1);
+                ImGui::Text("From: \t%s %s\t",start->data.name, start->data.abv);
+                ImGui::Text("To:   \t%s %s\t",end->data.name, end->data.abv);
+                ImGui::Checkbox("Animations", &animations);
+                if (animations) {
+                    float speed = path_rate;
+                    ImGui::SliderFloat("Adjust Speed", &speed, 0.1f, 2.f);
+                    path_rate = speed;
+                }
             }
-            if (ImGui::Button("Select end")){
-                //Change the mouse click callback to set start node to clicked mouse position
-                Context::mouse_click_callback = [&](int button, int action, int mods) {
-                    if (!is_gui_hover && !mouse_dragged && action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1 && !Context::is_key_pressed(GLFW_KEY_SPACE)) {
-                        glm::vec2 mpos = Context::get_mouse_pos();
-                        float search_radius = 25;
-                        auto node = ports.nodes.search(
-                            [&](ListNode<GraphNode<Airport>*>* node, int)->bool
-                            {
-                                return glm::distance(mpos,
-                                to_screen({ node->data->data.pos.x,node->data->data.pos.y })) < search_radius;
-                            }
-                        );
-                        if (node)
-                            end = node->data;
-                        mouse_dragged = false;
-                    }
-                };
-            }
+
             static double timediff = 0;
             if (ImGui::Button("Find Path!")){
                 curr_path = 0;
@@ -432,7 +409,7 @@ int main() {
                 default:    break;
                 }
 
-                switch (selection){
+                switch (algoSelected){
                 case 0:     cost = ports.Dijkstra(start, end, &path);           break;
                 case 1:     cost = ports.AStar(start, end, heuristicFunc,&path);break;
                 case 2:     cost = ports.BreadthFirstSearch(start, end, &path); break;
@@ -442,55 +419,20 @@ int main() {
                 timediff = timer.elapsed();
             }
             ImGui::NewLine();
-            ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
-            ImGui::NewLine();
-            ImGui::Text("Path cost: %u",cost);
+            
 
-            // currently selected node
-            if (ImGui::CollapsingHeader("Currently selected", ImGuiTreeNodeFlags_Framed)){
-                if (current){
-                    ImGui::Text("Name:    \t%s", current->data.name);
-                    ImGui::Text("Country: \t%s", current->data.country);
-                    ImGui::Text("Code:    \t%s", current->data.abv);
-                    
-                    ImGui::CollapsingHeader("Flights",ImGuiTreeNodeFlags_Framed);
-
-                    int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
-                    if (ImGui::BeginTable("flight", 4, tableFlags)){
-                        is_gui_hover |= ImGui::IsItemHovered();
-
-                        ImGui::TableSetupColumn("   FROM   ");
-                        ImGui::TableSetupColumn(" ");
-                        ImGui::TableSetupColumn("   TO   ");
-                        ImGui::TableSetupColumn("   COST   ");
-                        ImGui::TableHeadersRow();
-
-                        while(auto edge = current->neighbours.iterate()){
-                            auto flight = edge->data;
-                            auto to = flight.to;
-                            ImGui::TableNextColumn(); ImGui::Text("    %s   ", current->data.abv);
-                            ImGui::TableNextColumn(); ImGui::Text(" -- ");
-                            ImGui::TableNextColumn(); ImGui::Text("    %s   ", to->data.abv);
-                            ImGui::TableNextColumn(); ImGui::Text("    %d   ", flight.weight);
-                            // ImGui::TableNextRow();
-                        }
-                        ImGui::EndTable();
-                    }
-                }
-
-            }
-
-
-
-
+            // details of found path
             if(ImGui::CollapsingHeader("Path Details",ImGuiTreeNodeFlags_Framed)){
-                is_gui_hover |= ImGui::IsItemHovered();
+                ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
+                ImGui::NewLine();
+                ImGui::SetWindowFontScale(1.8);
+                ImGui::Text("Path cost: \t %u",cost);
+                
                 if(!path.edges.isEmpty()){
                     // int tableFlags = 0;
                     int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
                     ImGui::SetWindowFontScale(1.5);
                     if (ImGui::BeginTable("split", 4, tableFlags)){
-                        is_gui_hover |= ImGui::IsItemHovered();
 
                         ImGui::TableSetupColumn("   FROM   ");
                         ImGui::TableSetupColumn(" ");
@@ -516,7 +458,6 @@ int main() {
 
             
             ImGui::End();
-            
         }
 
 
@@ -535,6 +476,9 @@ int main() {
             };
 
 
+            if (currentAirport && currentAirport != start && currentAirport != end){
+                showAirportName(&currentAirport->data);
+            }
             if (start != &noSelection) {
                 showAirportName(&start->data);
             }
@@ -556,15 +500,12 @@ int main() {
 
         auto to_scr_mat = get_to_scr_mat();
 
-
-        
         while (auto port = ports.nodes.iterate()) {
-
             while (auto edge = port->data->neighbours.iterate()) {
                 auto to = edge->data.to;
 
-                glm::vec2 pos1 = transform(to_scr_mat, { port->data->data.pos.x, port->data->data.pos.y });
-                glm::vec2 pos2 = transform(to_scr_mat, { to->data.pos.x, to->data.pos.y });
+                Vec2 pos1 = transform(to_scr_mat, { port->data->data.pos.x, port->data->data.pos.y });
+                Vec2 pos2 = transform(to_scr_mat, { to->data.pos.x, to->data.pos.y });
 
                 if (!is_in_screen(pos1) && !is_in_screen(pos2))
                     continue;
@@ -601,11 +542,9 @@ int main() {
                     }.draw();
                 }
                 else if (visit_number == 0) {
-                    // glm::vec2 pos1{ to->data->data.x, to->data->data.y };
-                    // glm::vec2 pos2{ to->next->data->data.x, to->next->data->data.y };
-                    glm::vec2 pos1{ st->data.pos.x, st->data.pos.y };
-                    glm::vec2 pos2{ to->data.pos.x, to->data.pos.y };
-                    glm::vec2 mid = pos1 * (1.f - leftover) + pos2 * leftover;
+                    Vec2 pos1{ st->data.pos.x, st->data.pos.y };
+                    Vec2 pos2{ to->data.pos.x, to->data.pos.y };
+                    Vec2 mid = pos1 * (1.f - leftover) + pos2 * leftover;
                     Context::Circle{
                         .center = to_screen(pos1),
                         .radius = (st == start || st == end)?25.0f:20.0f,
@@ -631,14 +570,7 @@ int main() {
 
                 }              
                 visit_number--;
-            // }
-            // else {
-            //     Context::Circle{
-            //         .center = to_screen({to->data->data.pos.x,to->data->data.pos.y}),
-            //         .radius = 25,
-            //         .color = Color::orange2
-            //     }.draw();
-            // }
+
                 st = to;
                 if (st == end) {
                     Context::Circle{
@@ -649,9 +581,9 @@ int main() {
                 }
         }
 
+
+
         //Now draw icons
-
-
         while (auto port = ports.nodes.iterate()){
             Vec2 b = transform(to_scr_mat, { port->data->data.pos.x, port->data->data.pos.y });
             if (!is_in_screen(b))
@@ -668,6 +600,12 @@ int main() {
                     .center = b,
                     .radius = 25,
                     .color = Color::emerald
+            }.draw(rest_tex);
+            else if (port->data == currentAirport)
+                Context::Circle{
+                    .center = b,
+                    .radius = 25,
+                    .color = Color::aqua
             }.draw(rest_tex);
             else
                 Context::Circle{
