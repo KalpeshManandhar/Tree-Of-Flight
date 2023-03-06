@@ -4,9 +4,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#define isDelimiter(X)  ((X == '\n')||(X == '\t')||(X == '\r')||(X == 0))
+#define isDelimiter(X)  ((X == '\n')||(X == '\t')||(X == '\r')||(X == ',')||(X == 0))
 #define isAlphabet(X)   (((X >= 'a')&&(X <= 'z'))||((X >= 'A')&&(X <= 'Z')))
-
+#define isNumber(X)     ((X >= '0') && (X <= '9'))
 
 
 
@@ -29,6 +29,30 @@ static const char *parseString_fixedLength(char * buffer, int &cursor, int lengt
     cursor += length;
     buffer[cursor++] = 0;
     return(str);
+}
+
+
+static float parseFloat(char *buffer, int &cursor){
+    int a = 0, divBy = 1;
+    int decimalFlag = 0;
+    while(!isNumber(buffer[cursor])){
+        cursor++;
+    }
+    while(!isDelimiter(buffer[cursor])){
+        if (buffer[cursor] == '.'){
+            decimalFlag = 1;
+            cursor++;
+        }
+        if (isNumber(buffer[cursor])){
+            if (decimalFlag)
+                divBy *= 10;
+            a = a*10 + (buffer[cursor] - '0');
+        }
+        else
+            break;
+        cursor++;
+    }
+    return((float)a/divBy);
 }
 
 static char * loadFileToBuffer(const char *filepath){

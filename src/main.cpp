@@ -97,8 +97,9 @@ Vec2 transform_vec(Mat mat, Vec2 coor) {
 
 
 struct Airport{
-    const char *name, *abv;
+    const char *name, *abv, *country;
     Vec2 pos;
+    float latitude, longitude;
     uint32_t flights;
 };
 
@@ -116,13 +117,17 @@ uint32_t zeroHeuristic(GraphNode<Airport> *start, GraphNode<Airport> *end){
 
 int main() {
 
-    char* buffer = loadFileToBuffer("data/airports.csv");
+    char* buffer = loadFileToBuffer("data/airportdata.csv");
     Graph<Airport> ports;
     int cursor = 0;
     while (buffer[cursor]) {
         Airport a;
+        // country
+        a.country = parseStringDelimited(buffer, cursor,',');
+        a.name = parseStringDelimited(buffer, cursor,',');
         a.abv = parseString_fixedLength(buffer, cursor, 3);
-        a.name = parseStringDelimited(buffer, cursor);
+        a.latitude = parseFloat(buffer, cursor);
+        a.longitude = parseFloat(buffer,cursor);
         a.pos.x = getRandom();
         a.pos.y = getRandom();
         a.flights = getRandom() % 2 +1;
