@@ -16,6 +16,15 @@
 
 #define DataFilePath "./data/airportdata.csv"
 #define FlightFilePath "./data/flights.csv"
+#define MapTextureFile "./asia.png"
+
+
+#define LONGITUDE_MIN 50
+#define LONGITUDE_MAX 160
+#define LATITUDE_MIN -40
+#define LATITUDE_MAX 60
+
+#define INITIAL_WORLD_SCALE 0.001
 
 std::ostream& operator<<(std::ostream& os, Pos pos) {
     os << " ( " << pos.x << " , " << pos.y << " ) ";
@@ -56,8 +65,8 @@ int main() {
         a.abv = parseString_fixedLength(buffer, cursor, 3);
         a.latitude = parseFloat(buffer, cursor);
         a.longitude = parseFloat(buffer,cursor);
-        a.pos.x = a.longitude/360 * Context::get_real_dim().x;
-        a.pos.y = a.latitude/90 * Context::get_real_dim().y;
+        a.pos.x = (a.longitude-LONGITUDE_MIN)/(LONGITUDE_MAX - LONGITUDE_MIN);
+        a.pos.y = (a.latitude-LATITUDE_MIN)/(LATITUDE_MAX - LATITUDE_MIN);
         a.flights = getRandom() % 2 +1;
         
         auto newNode = newGraphNode(a);
@@ -157,6 +166,42 @@ int main() {
     Pos anchor_screen = { 0.f,0.f };
     bool is_gui_hover = false;
 
+
+
+    // animations off/on
+    bool animations = false;
+
+    // selected algorithm/heuristic indexes + options
+    int algoSelected= 0;
+    const char *algoOptions[] = {"Dijkstra", "A*", "BFS", "DFS"};
+    int heuristicSelected= 0;
+    const char *heuristicOptions[] = {"Zero", "Euclidean distance", "Manhattan distance"};
+    
+    
+    
+
+    //Rate at which the path will be revealed
+    double path_rate = 0.25;
+    //A number representing where, and at which path we currently are
+    //Integer path represents the path number and floating part represents fraction
+    double curr_path = 0;
+    //Plane foto
+    Context::Texture fly_tex;
+    if (!Context::createTexture("plane.png", fly_tex)) {
+        std::cerr << "Couldnot load plane png" << std::endl;
+        fly_tex = Context::default_texture;
+    }
+    Context::Texture rest_tex;
+    if (!Context::createTexture("vert_plane.png", rest_tex)) {
+        std::cerr << "Couldnot load resting plane png" << std::endl;
+        rest_tex = Context::default_texture;
+    }
+    Context::Texture map_texture;
+    if (!Context::createTexture(MapTextureFile, map_texture)) {
+        std::cerr << "Couldnot load map png" << std::endl;
+        map_texture = Context::default_texture;
+    }
+
     auto get_to_scr_mat = [&]() {
         Mat mat = get_scale_mat(1.0);
 
@@ -191,6 +236,29 @@ int main() {
             pos.y <= Context::get_real_dim().y);
     };
     bool mouse_dragged = false;
+    
+
+
+
+
+    //These are to adjust aspect ratio and offset for background image
+    Vec2 back_scale = { 1.f / world_scale.x, 1.f / world_scale.y };
+    back_scale *= 1.6f;
+    Vec2 back_pan = to_world(Context::get_real_dim() * 0.5f);
+
+    // I want the coords of the map texture to set the position of airport acc to latitude and longitude
+    Vec2 leftTop={0,0}, rightBottom={0,0};
+    leftTop = back_pan + Vec2{-0.5 *map_texture.width,0.5 * map_texture.height};
+    rightBottom = back_pan + Vec2{0.5 *map_texture.width,-0.5 * map_texture.height};
+
+    while (auto port = ports.nodes.iterate()){
+        Airport *a = &port->data->data;
+        a->pos.x = leftTop.x + (float)(a->longitude-LONGITUDE_MIN)/(LONGITUDE_MAX - LONGITUDE_MIN) * map_texture.width;
+        a->pos.y = rightBottom.y + (float)(a->latitude-LATITUDE_MIN)/(LATITUDE_MAX - LATITUDE_MIN) * map_texture.height;
+    }
+
+
+
     Context::cursor_move_callback = [&](double dx, double dy) {
         if (is_in_screen(Context::get_mouse_pos()) && !is_gui_hover
             && Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1)) {
@@ -227,49 +295,8 @@ int main() {
         mouse_dragged = false;
     };
 
-
-
-    // animations off/on
-    bool animations = false;
-
-    // selected algorithm/heuristic indexes + options
-    int algoSelected= 0;
-    const char *algoOptions[] = {"Dijkstra", "A*", "BFS", "DFS"};
-    int heuristicSelected= 0;
-    const char *heuristicOptions[] = {"Zero", "Euclidean distance", "Manhattan distance"};
-    
-    
     Timer f_timer;
     f_timer.reset();
-
-    //Rate at which the path will be revealed
-    double path_rate = 0.25;
-    //A number representing where, and at which path we currently are
-    //Integer path represents the path number and floating part represents fraction
-    double curr_path = 0;
-    //Plane foto
-    Context::Texture fly_tex;
-    if (!Context::createTexture("plane.png", fly_tex)) {
-        std::cerr << "Couldnot load plane png" << std::endl;
-        fly_tex = Context::default_texture;
-    }
-    Context::Texture rest_tex;
-    if (!Context::createTexture("vert_plane.png", rest_tex)) {
-        std::cerr << "Couldnot load resting plane png" << std::endl;
-        rest_tex = Context::default_texture;
-    }
-    Context::Texture nepal_tex;
-    if (!Context::createTexture("nepal_map.png", nepal_tex)) {
-        std::cerr << "Couldnot load nepal map png" << std::endl;
-        nepal_tex = Context::default_texture;
-    }
-
-    //These are to adjust aspect ratio and offset for background image
-    Vec2 back_scale = { 1.f / world_scale.x, 1.f / world_scale.y };
-    back_scale *= 1.4f;
-    Vec2 back_pan = to_world(Context::get_real_dim() * 0.5f);
-
-
 
     //Timer purpose analyzer
     Analyzer alz = MAKE_ANALYZER(General_Analyzer);
@@ -319,10 +346,10 @@ int main() {
         // map
         Context::Rectangle{
             .center = to_screen(back_pan),
-            .size = {nepal_tex.width, nepal_tex.height},
+            .size = {map_texture.width, map_texture.height},
             .color = Color::white,
             .scale = world_scale * back_scale
-        }.draw(nepal_tex);
+        }.draw(map_texture);
 
 
         // [UI]
@@ -380,6 +407,7 @@ int main() {
 
 
             {
+
                 ImGui::CollapsingHeader("Algorithm details", ImGuiTreeNodeFlags_Framed);
                 ImGui::Combo("Using?", &algoSelected, algoOptions, sizeof(algoOptions)/sizeof(*algoOptions),-1);
                 if(algoSelected == 1)
