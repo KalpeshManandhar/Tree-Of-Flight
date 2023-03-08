@@ -19,9 +19,9 @@
 #define MapTextureFile "./asia.png"
 
 
-#define LONGITUDE_MIN 50
-#define LONGITUDE_MAX 160
-#define LATITUDE_MIN -40
+#define LONGITUDE_MIN 55
+#define LONGITUDE_MAX 155
+#define LATITUDE_MIN -25
 #define LATITUDE_MAX 60
 
 #define INITIAL_WORLD_SCALE 0.001
@@ -65,10 +65,9 @@ int main() {
         a.abv = parseString_fixedLength(buffer, cursor, 3);
         a.latitude = parseFloat(buffer, cursor);
         a.longitude = parseFloat(buffer,cursor);
-        a.pos.x = (a.longitude-LONGITUDE_MIN)/(LONGITUDE_MAX - LONGITUDE_MIN);
-        a.pos.y = (a.latitude-LATITUDE_MIN)/(LATITUDE_MAX - LATITUDE_MIN);
+        a.pos.x = a.longitude;
+        a.pos.y = a.latitude;
         a.flights = getRandom() % 2 +1;
-        
         auto newNode = newGraphNode(a);
         ports.addNode(newNode);
     }
@@ -161,7 +160,7 @@ int main() {
     // Context::set_window_icon("aeroplane.png");
 
 
-    Pos world_scale = { 0.0019,0.0019 };
+    Pos world_scale = { 0.019,0.019*2.0};
     Pos anchor_world = { 0.0,0.0 };
     Pos anchor_screen = { 0.f,0.f };
     bool is_gui_hover = false;
@@ -242,21 +241,9 @@ int main() {
 
 
     //These are to adjust aspect ratio and offset for background image
-    Vec2 back_scale = { 1.f / world_scale.x, 1.f / world_scale.y };
-    back_scale *= 1.6f;
-    Vec2 back_pan = to_world(Context::get_real_dim() * 0.5f);
-
-    // I want the coords of the map texture to set the position of airport acc to latitude and longitude
-    Vec2 leftTop={0,0}, rightBottom={0,0};
-    leftTop = back_pan + Vec2{-0.5 *map_texture.width,0.5 * map_texture.height};
-    rightBottom = back_pan + Vec2{0.5 *map_texture.width,-0.5 * map_texture.height};
-
-    while (auto port = ports.nodes.iterate()){
-        Airport *a = &port->data->data;
-        a->pos.x = leftTop.x + (float)(a->longitude-LONGITUDE_MIN)/(LONGITUDE_MAX - LONGITUDE_MIN) * map_texture.width;
-        a->pos.y = rightBottom.y + (float)(a->latitude-LATITUDE_MIN)/(LATITUDE_MAX - LATITUDE_MIN) * map_texture.height;
-    }
-
+    Vec2 map_size{ LONGITUDE_MAX - LONGITUDE_MIN, LATITUDE_MAX - LATITUDE_MIN };
+    Vec2 map_center = Vec2{ LONGITUDE_MAX + LONGITUDE_MIN , LATITUDE_MAX + LATITUDE_MIN};
+    map_center /= 2.0;
 
 
     Context::cursor_move_callback = [&](double dx, double dy) {
@@ -345,23 +332,36 @@ int main() {
         // [BACKGROUND]
         // map
         Context::Rectangle{
-            .center = to_screen(back_pan),
-            .size = {map_texture.width, map_texture.height},
-            .color = Color::white,
-            .scale = world_scale * back_scale
+            .center = to_screen(map_center),
+            .size = transform_vec(get_to_scr_mat(), map_size),
+            .color = Color::aqua
         }.draw(map_texture);
-
 
         // [UI]
         // imgui window
         {
             int windowFlags = 0;
             windowFlags = windowFlags | ImGuiWindowFlags_AlwaysAutoResize;
-            ImGui::Begin("Hello!",0, windowFlags);
+            ImGui::Begin("Flight Controls",0, windowFlags);
             ImGui::SetWindowFontScale(1.5);
 
             is_gui_hover |= ImGui::IsWindowHovered();
             is_gui_hover |= ImGui::IsAnyItemHovered();
+
+            //General debug info, remove later
+            {
+                Pos mpos = Context::get_mouse_pos();
+                Pos mwld = to_world(mpos);
+                using namespace std;
+                std::string msg;
+                msg += "Screen mouse position : " + to_string(mpos.x) + " , " + to_string(mpos.y);
+                msg += "\n";
+                msg += "World mouse position : " + to_string(mwld.x) + " , " + to_string(mwld.y);
+                msg += "\n";
+                ImGui::Text("%s", msg.c_str());
+
+            }
+
 
             // currently selected node
             if (ImGui::CollapsingHeader("Currently selected", ImGuiTreeNodeFlags_Framed)){
