@@ -10,7 +10,6 @@
 
 #include "graph.h"
 #include "file.h"
-#include "throwaway.h"
 #include "renderers.hpp"
 #include "math.h"
 
@@ -21,8 +20,8 @@
 
 #define LONGITUDE_MIN 55
 #define LONGITUDE_MAX 155
-#define LATITUDE_MIN -25
-#define LATITUDE_MAX 60
+#define LATITUDE_MIN -23
+#define LATITUDE_MAX 65
 
 #define INITIAL_WORLD_SCALE 0.001
 
@@ -67,7 +66,6 @@ int main() {
         a.longitude = parseFloat(buffer,cursor);
         a.pos.x = a.longitude;
         a.pos.y = a.latitude;
-        a.flights = getRandom() % 2 +1;
         auto newNode = newGraphNode(a);
         ports.addNode(newNode);
     }
@@ -115,7 +113,8 @@ int main() {
                     }
                     // only add edge if connection previously doesnt exist
                     if (!isRepeated){
-                        uint32_t wt = getRandom() % 4 + 1;
+                        uint32_t seed = (uint32_t)found;
+                        uint32_t wt = random(seed) % 17 + 1;
                         if (wt > maxWt)
                             maxWt = wt;
                         if (wt < minWt)
@@ -160,7 +159,7 @@ int main() {
     // Context::set_window_icon("aeroplane.png");
 
 
-    Pos world_scale = { 0.019,0.019*2.0};
+    Pos world_scale = { 0.029,0.029*2};
     Pos anchor_world = { 0.0,0.0 };
     Pos anchor_screen = { 0.f,0.f };
     bool is_gui_hover = false;
@@ -244,6 +243,7 @@ int main() {
     Vec2 map_size{ LONGITUDE_MAX - LONGITUDE_MIN, LATITUDE_MAX - LATITUDE_MIN };
     Vec2 map_center = Vec2{ LONGITUDE_MAX + LONGITUDE_MIN , LATITUDE_MAX + LATITUDE_MIN};
     map_center /= 2.0;
+    Vec2 map_scale = {1,1};
 
 
     Context::cursor_move_callback = [&](double dx, double dy) {
@@ -334,7 +334,8 @@ int main() {
         Context::Rectangle{
             .center = to_screen(map_center),
             .size = transform_vec(get_to_scr_mat(), map_size),
-            .color = Color::aqua
+            .color = Color::silver,
+            .scale = map_scale
         }.draw(map_texture);
 
         // [UI]
@@ -349,7 +350,7 @@ int main() {
             is_gui_hover |= ImGui::IsAnyItemHovered();
 
             //General debug info, remove later
-            {
+            /*{
                 Pos mpos = Context::get_mouse_pos();
                 Pos mwld = to_world(mpos);
                 using namespace std;
@@ -360,7 +361,7 @@ int main() {
                 msg += "\n";
                 ImGui::Text("%s", msg.c_str());
 
-            }
+            }*/
 
 
             // currently selected node

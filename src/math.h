@@ -55,3 +55,8 @@ Vec2 transform_vec(Mat mat, Vec2 coor) {
     Vec3 res = mat * Vec3{coor.x, coor.y, 0.0};
     return Vec2{res.x, res.y};
 }
+
+uint32_t random(uint32_t index){
+    index = (index<<13)^index;
+    return((index * (index *index *15731 +789221)+1376312589)&0x7fffffff);
+}
