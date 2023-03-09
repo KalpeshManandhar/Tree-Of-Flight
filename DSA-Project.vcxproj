@@ -175,7 +175,6 @@
     <ClInclude Include="src\renderers.hpp" />
     <ClInclude Include="src\throwaway.h" />
     <ClInclude Include="src\timers.hpp" />
-    <ClInclude Include="src\tsu_math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad\glad.c" />
@@ -188,7 +187,6 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderers.cpp" />
-    <ClCompile Include="src\tsu_math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="out\data\airports.csv" />

@@ -45,9 +45,6 @@
     <ClCompile Include="src\renderers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\tsu_math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glad\glad\glad.h">
@@ -93,9 +90,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\throwaway.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tsu_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\timers.hpp">
