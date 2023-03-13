@@ -159,7 +159,7 @@ int main() {
     // Context::set_window_icon("aeroplane.png");
 
 
-    Pos world_scale = { 0.029,0.029*2};
+    Pos world_scale = { 0.29,0.29*2};
     Pos anchor_world = { 0.0,0.0 };
     Pos anchor_screen = { 0.f,0.f };
     bool is_gui_hover = false;
@@ -243,13 +243,24 @@ int main() {
     Vec2 map_size{ LONGITUDE_MAX - LONGITUDE_MIN, LATITUDE_MAX - LATITUDE_MIN };
     Vec2 map_center = Vec2{ LONGITUDE_MAX + LONGITUDE_MIN , LATITUDE_MAX + LATITUDE_MIN};
     map_center /= 2.0;
+    anchor_world = map_center;
     Vec2 map_scale = {1,1};
 
+    //Limits of movement
+    Vec2 max_map = map_size * 1.2f;
+    Pos minimum_point = map_center - max_map * 0.5f;
+    Pos maximum_point = map_center + max_map * 0.5f;
 
     Context::cursor_move_callback = [&](double dx, double dy) {
         if (is_in_screen(Context::get_mouse_pos()) && !is_gui_hover
             && Context::is_mouse_button_pressed(GLFW_MOUSE_BUTTON_1)) {
             anchor_screen += Pos{ dx, dy };
+            Pos lowleft = to_world(Pos{ 0.0,0.0 });
+            Pos upright = to_world(Context::get_real_dim());
+            if (lowleft.x < minimum_point.x|| lowleft.y < minimum_point.y||
+                upright.x > maximum_point.x|| upright.y > maximum_point.y) {
+                anchor_screen -= Pos{ dx, dy };
+            }
             mouse_dragged = true;
         }
         else
@@ -258,9 +269,21 @@ int main() {
 
     Context::scroll_callback = [&](double dx, double dy) {
         if (is_in_screen(Context::get_mouse_pos()) && !is_gui_hover) {
+            Pos temp_anchor_wrld = anchor_world;
+            Pos temp_anchor_scr = anchor_screen;
+            Vec2 temp_scale = world_scale;
             anchor_world = to_world(Context::get_mouse_pos());
             anchor_screen = Context::get_mouse_pos();
             world_scale *= pow(1.1, dy);
+
+            Pos lowleft = to_world(Pos{ 0.0,0.0 });
+            Pos upright = to_world(Context::get_real_dim());
+            if (lowleft.x < minimum_point.x || lowleft.y < minimum_point.y ||
+                upright.x > maximum_point.x || upright.y > maximum_point.y) {
+                anchor_screen = temp_anchor_scr;
+                anchor_world = temp_anchor_wrld;
+                world_scale = temp_scale;
+            }
         }
     };
 
