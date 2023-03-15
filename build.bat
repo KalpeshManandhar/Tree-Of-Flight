@@ -11,7 +11,7 @@
 
 @set INCLUDES=-I%IMGUI_DIR% -I%GLAD_DIR% -I%GLFW_DIR%\include -I%STB_DIR% -I%GLM_DIR% -I%KHR_DIR%
 @set LIBS=-L%GLFW_DIR%\x86
-@set LINKS=-lglfw3 -lglfw3_mt -lglfw3dll -lShell32 
+@set LINKS=-lglfw3_mt -lglfw3dll -lglfw3 -lopengl32 -lShell32 
 
 @set OUTPUT=TreeOfFlight.exe
 @set OUTPUT_DIR=.\out
