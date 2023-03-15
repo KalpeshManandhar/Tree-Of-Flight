@@ -4,31 +4,27 @@
 #endif
 #endif
 
-#include <fstream>
 
 #include "timers.hpp"
 
 #include "graph.h"
 #include "file.h"
 #include "renderers.hpp"
-#include "math.h"
+#include "utils.h"
+
+
+// latitude and longitude ranges of the map 
+#define LONGITUDE_MIN 55
+#define LONGITUDE_MAX 155
+#define LATITUDE_MIN -23
+#define LATITUDE_MAX 65
+
 
 #define DataFilePath "./data/airportdata.csv"
 #define FlightFilePath "./data/flights.csv"
 #define MapTextureFile "./asia.png"
 
 
-#define LONGITUDE_MIN 55
-#define LONGITUDE_MAX 155
-#define LATITUDE_MIN -23
-#define LATITUDE_MAX 65
-
-#define INITIAL_WORLD_SCALE 0.001
-
-std::ostream& operator<<(std::ostream& os, Pos pos) {
-    os << " ( " << pos.x << " , " << pos.y << " ) ";
-    return os;
-}
 
 
 struct Airport{
@@ -40,32 +36,20 @@ struct Airport{
 using Node = GraphNode<Airport>;
 
 
-uint32_t Euclidean(Node*start, Node*end){
-    return((uint32_t)glm::distance(start->data.pos, end->data.pos));
-}
-
-uint32_t TaxiCab(Node*start, Node*end){
-    return((uint32_t)(glm::abs(start->data.pos.x - end->data.pos.x)+glm::abs(start->data.pos.y - end->data.pos.y)));
-}
-
+// cost calculation functions
+uint32_t Euclidean(Node*start, Node*end);
+uint32_t TaxiCab(Node*start, Node*end);
 uint32_t zero(Node *start, Node *end)   {return(0);}
 uint32_t unity(Node *start, Node *end)  {return(1);}
+uint32_t randomCost(Node *start, Node *end);
+uint32_t moneyCost(Node *start, Node *end);
 
-uint32_t randomCost(Node *start, Node *end){
-    static Timer t;
-    uint32_t seed = random(random(t.elapsed() * 100000));
-    return(random(seed) %4597);
-}
 
-uint32_t moneyCost(Node *start, Node *end){
-    uint32_t distance = Euclidean(start,end);
-    return(random(distance)%100 * (float)distance/100.0f * 500);
-}
 
 
 int main() {
-
     Graph<Airport> ports;
+
     char* buffer = loadFileToBuffer(DataFilePath);
     int cursor = 0;
     while (buffer[cursor]) {
@@ -89,9 +73,6 @@ int main() {
         char *flights = loadFileToBuffer(FlightFilePath);
         int curs = 0;
         GraphNode<Airport> *currentAirport = NULL;
-        Timer t;
-        Timer t1;
-        t1.reset();
         int i = 0;
         while(flights[curs]){
             if (flights[curs] == '#'){
@@ -102,7 +83,6 @@ int main() {
                         return (strcmp(from, node->data->data.abv) == 0);
                     }
                 );
-                printf("Search time %d: %lf\n", i++, t.elapsed());
                 if (found){
                     currentAirport = found->data;
                 }
@@ -115,7 +95,7 @@ int main() {
                         return (strcmp(to, node->data->data.abv) == 0);
                     }
                 );
-                printf("Search time %d: %lf\n", i++, t.elapsed());
+
                 if (found) {
                     bool isRepeated = false;
                     while (auto toNodes = currentAirport->neighbours.iterate()){
@@ -158,10 +138,7 @@ int main() {
     Context::init();
     ImGui::StyleColorsDark();
     ImGui::GetStyle().Alpha = 0.75;
-    // ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("comic.ttf", 18);
-
     Context::set_window_title("Tree of Flight");
-    // Context::set_window_icon("aeroplane.png");
 
 
     Pos world_scale = { 0.029,0.029*2};
@@ -355,21 +332,6 @@ int main() {
             is_gui_hover |= ImGui::IsWindowHovered();
             is_gui_hover |= ImGui::IsAnyItemHovered();
 
-            //General debug info, remove later
-            /*{
-                Pos mpos = Context::get_mouse_pos();
-                Pos mwld = to_world(mpos);
-                using namespace std;
-                std::string msg;
-                msg += "Screen mouse position : " + to_string(mpos.x) + " , " + to_string(mpos.y);
-                msg += "\n";
-                msg += "World mouse position : " + to_string(mwld.x) + " , " + to_string(mwld.y);
-                msg += "\n";
-                ImGui::Text("%s", msg.c_str());
-
-            }*/
-
-
             // currently selected node
             if (ImGui::CollapsingHeader("Currently selected", ImGuiTreeNodeFlags_Framed)){
                 if (currentAirport){
@@ -377,13 +339,11 @@ int main() {
                     ImGui::Text("Country: \t%s", currentAirport->data.country);
                     ImGui::Text("Code:    \t%s", currentAirport->data.abv);
                     
-                    if (ImGui::Button("Set as start")){
+                    if (ImGui::Button("Set as start"))
                         start = currentAirport;
-                    }
                     ImGui::SameLine(0, 15);
-                    if (ImGui::Button("Set as end")){
+                    if (ImGui::Button("Set as end"))
                         end = currentAirport;
-                    }
 
                     if(ImGui::CollapsingHeader("Flights",ImGuiTreeNodeFlags_Framed)){
                         int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
@@ -413,6 +373,7 @@ int main() {
             ImGui::NewLine();
 
 
+            // algo details
             {
 
                 ImGui::CollapsingHeader("Algorithm details", ImGuiTreeNodeFlags_Framed);
@@ -439,12 +400,13 @@ int main() {
 
                 uint32_t (*heuristicFunc)(GraphNode<Airport>*,GraphNode<Airport>*)=NULL;
                 switch (heuristicSelected){
-                case 0:     heuristicFunc = &zero;    break;
+                case 0:     heuristicFunc = &zero;             break;
                 case 1:     heuristicFunc = &Euclidean;        break;
                 case 2:     heuristicFunc = &TaxiCab;          break;
                 default:    break;
                 }
 
+                // heuristic for A*
                 uint32_t (*pathcostFunc)(GraphNode<Airport>*, GraphNode<Airport>*) = NULL;
                 switch (constraintSelected){
                 case 0:     pathcostFunc = &randomCost;     break;
@@ -453,7 +415,8 @@ int main() {
                 case 3:     pathcostFunc = &moneyCost;      break;
                 default:    break;
                 }
-                // change path based on constraint
+
+                // change path weight based on constraint
                 while (auto airport = ports.nodes.iterate()){
                     while (auto path = airport->data->neighbours.iterate()){
                         uint32_t wt = pathcostFunc(airport->data, path->data.to);
@@ -465,7 +428,7 @@ int main() {
                     }
                 }
 
-
+                // calc cost based on algo selected
                 switch (algoSelected){
                 case 0:     cost = ports.Dijkstra(start, end, &path);           break;
                 case 1:     cost = ports.AStar(start, end, heuristicFunc,&path);break;
@@ -486,7 +449,6 @@ int main() {
                 ImGui::Text("Path cost: \t %u",cost);
                 
                 if(!path.edges.isEmpty()){
-                    // int tableFlags = 0;
                     int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
                     ImGui::SetWindowFontScale(1.5);
                     if (ImGui::BeginTable("split", 4, tableFlags)){
@@ -504,23 +466,19 @@ int main() {
                             ImGui::TableNextColumn(); ImGui::Text(" -- ");
                             ImGui::TableNextColumn(); ImGui::Text("    %s   ", to->data.abv);
                             ImGui::TableNextColumn(); ImGui::Text("    %d   ", edge->data->weight);
-                            // ImGui::TableNextRow();
                             st = to;
                         }
                         ImGui::EndTable();
                     }
                 }
             }
-            // ImGui::Text("Euclidean distance covered: %u", dist);
-
-            
             ImGui::End();
         }
 
 
         // show names above selected nodes
         {
-            auto showAirportName = [=](Airport *a){
+            auto showAirportName = [&](Airport *a){
                 int windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove ;
                 ImGui::Begin(a->abv, NULL, windowFlags);
                 // imgui uses top left as (0,0)
@@ -561,8 +519,8 @@ int main() {
             while (auto edge = port->data->neighbours.iterate()) {
                 auto to = edge->data.to;
 
-                Vec2 pos1 = transform(to_scr_mat, { port->data->data.pos.x, port->data->data.pos.y });
-                Vec2 pos2 = transform(to_scr_mat, { to->data.pos.x, to->data.pos.y });
+                Vec2 pos1 = transform(to_scr_mat, port->data->data.pos);
+                Vec2 pos2 = transform(to_scr_mat, to->data.pos);
 
                 if (!is_in_screen(pos1) && !is_in_screen(pos2))
                     continue;
@@ -584,58 +542,57 @@ int main() {
         GraphNode<Airport>* st = path.start;
         while (auto edge = path.edges.iterate()) {
             auto to = edge->data->to;
-            // if (to->next) {
-                if (visit_number > 0 || !animations) {
-                    Context::Circle{
-                        .center = to_screen({st->data.pos.x,st->data.pos.y}),
-                        .radius = (st == start || st == end)?25.0f:20.0f,
-                        .color = Color::orange2
-                    }.draw();
-                    Context::Line{
-                        .pos1 = to_screen({ st->data.pos.x ,st->data.pos.y }),
-                        .pos2 = to_screen({ to->data.pos.x ,to->data.pos.y }),
-                        .color = Color::pale,
-                        .line_width = 6
-                    }.draw();
-                }
-                else if (visit_number == 0) {
-                    Vec2 pos1{ st->data.pos.x, st->data.pos.y };
-                    Vec2 pos2{ to->data.pos.x, to->data.pos.y };
-                    Vec2 mid = pos1 * (1.f - leftover) + pos2 * leftover;
-                    Context::Circle{
-                        .center = to_screen(pos1),
-                        .radius = (st == start || st == end)?25.0f:20.0f,
-                        .color = Color::orange2
-                    }.draw();
-                    Context::Line{
-                        .pos1 = to_screen(pos1),
-                        .pos2 = to_screen(mid),
-                        .color = Color::pale,
-                        .line_width = 6
-                    }.draw();
-                    pos1 = pos2 - pos1;
-                    float fac = 1.f;
-                    if (pos1.x < 0.f)
-                        fac = -1.f;
-                    Context::Rectangle{
-                        .center = to_screen(mid),
-                        .size = {60,35 * fac},
-                        .color = Color::white,
-                        .rotate = atan2f(pos1.y,pos1.x)
-                    }.draw(fly_tex);
-                    curr_path += ( maxWt *2.0 - edge->data->weight ) * path_rate * f_time / (maxWt*2.0 - minWt);
+            if (visit_number > 0 || !animations) {
+                Context::Circle{
+                    .center = to_screen({st->data.pos.x,st->data.pos.y}),
+                    .radius = (st == start || st == end)?25.0f:20.0f,
+                    .color = Color::orange2
+                }.draw();
+                Context::Line{
+                    .pos1 = to_screen({ st->data.pos.x ,st->data.pos.y }),
+                    .pos2 = to_screen({ to->data.pos.x ,to->data.pos.y }),
+                    .color = Color::pale,
+                    .line_width = 6
+                }.draw();
+            }
+            else if (visit_number == 0) {
+                Vec2 pos1{ st->data.pos.x, st->data.pos.y };
+                Vec2 pos2{ to->data.pos.x, to->data.pos.y };
+                Vec2 mid = pos1 * (1.f - leftover) + pos2 * leftover;
+                Context::Circle{
+                    .center = to_screen(pos1),
+                    .radius = (st == start || st == end)?25.0f:20.0f,
+                    .color = Color::orange2
+                }.draw();
+                Context::Line{
+                    .pos1 = to_screen(pos1),
+                    .pos2 = to_screen(mid),
+                    .color = Color::pale,
+                    .line_width = 6
+                }.draw();
+                pos1 = pos2 - pos1;
+                float fac = 1.f;
+                if (pos1.x < 0.f)
+                    fac = -1.f;
+                Context::Rectangle{
+                    .center = to_screen(mid),
+                    .size = {60,35 * fac},
+                    .color = Color::white,
+                    .rotate = atan2f(pos1.y,pos1.x)
+                }.draw(fly_tex);
+                curr_path += ( maxWt *2.0 - edge->data->weight ) * path_rate * f_time / (maxWt*2.0 - minWt);
 
-                }              
-                visit_number--;
+            }              
+            visit_number--;
 
-                st = to;
-                if (st == end) {
-                    Context::Circle{
-                        .center = to_screen({st->data.pos.x,st->data.pos.y}),
-                        .radius = 25.0f,
-                        .color = Color::orange2
-                    }.draw();
-                }
+            st = to;
+            if (st == end) {
+                Context::Circle{
+                    .center = to_screen({st->data.pos.x,st->data.pos.y}),
+                    .radius = 25.0f,
+                    .color = Color::orange2
+                }.draw();
+            }
         }
 
 
@@ -684,5 +641,26 @@ int main() {
 
     Context::clean();
     return 0;
+}
+
+/*
+    COST CALCULATION FUNCTIONS
+*/
+uint32_t Euclidean(Node*start, Node*end){
+    return((uint32_t)glm::distance(start->data.pos, end->data.pos));
+}
+
+uint32_t TaxiCab(Node*start, Node*end){
+    return((uint32_t)(glm::abs(start->data.pos.x - end->data.pos.x)+glm::abs(start->data.pos.y - end->data.pos.y)));
+}
+uint32_t randomCost(Node *start, Node *end){
+    static Timer t;
+    uint32_t seed = random(random(t.elapsed() * 100000));
+    return(random(seed) %4597);
+}
+
+uint32_t moneyCost(Node *start, Node *end){
+    uint32_t distance = Euclidean(start,end);
+    return(random(distance)%100 * (float)distance/100.0f * 500);
 }
 
