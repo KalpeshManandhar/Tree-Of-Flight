@@ -40,17 +40,28 @@ struct Airport{
 using Node = GraphNode<Airport>;
 
 
-uint32_t Euclidean(GraphNode<Airport>*start, GraphNode<Airport>*end){
+uint32_t Euclidean(Node*start, Node*end){
     return((uint32_t)glm::distance(start->data.pos, end->data.pos));
 }
 
-uint32_t TaxiCab(GraphNode<Airport>*start, GraphNode<Airport>*end){
+uint32_t TaxiCab(Node*start, Node*end){
     return((uint32_t)(glm::abs(start->data.pos.x - end->data.pos.x)+glm::abs(start->data.pos.y - end->data.pos.y)));
 }
 
-uint32_t zeroHeuristic(GraphNode<Airport> *start, GraphNode<Airport> *end){
-    return(0);
+uint32_t zero(Node *start, Node *end)   {return(0);}
+uint32_t unity(Node *start, Node *end)  {return(1);}
+
+uint32_t randomCost(Node *start, Node *end){
+    static Timer t;
+    uint32_t seed = random(random(t.elapsed() * 100000));
+    return(random(seed) %4597);
 }
+
+uint32_t moneyCost(Node *start, Node *end){
+    uint32_t distance = Euclidean(start,end);
+    return(random(distance)%100 * (float)distance/100.0f * 500);
+}
+
 
 int main() {
 
@@ -113,13 +124,7 @@ int main() {
                     }
                     // only add edge if connection previously doesnt exist
                     if (!isRepeated){
-                        uint32_t seed = (uint32_t)found;
-                        uint32_t wt = random(seed) % 17 + 1;
-                        if (wt > maxWt)
-                            maxWt = wt;
-                        if (wt < minWt)
-                            minWt = wt;
-                        ports.addEdge(currentAirport, found->data, wt);
+                        ports.addEdge(currentAirport, found->data, 1);
                         currentAirport->data.flights++;
                     }
                 }
@@ -174,7 +179,8 @@ int main() {
     const char *algoOptions[] = {"Dijkstra", "A*", "BFS", "DFS"};
     int heuristicSelected= 0;
     const char *heuristicOptions[] = {"Zero", "Euclidean distance", "Manhattan distance"};
-    
+    int constraintSelected = 0;
+    const char *constraintOptions[] = {"Random cost","Min flights","Min distance travelled", "Cheapest path"};
     
     
 
@@ -413,6 +419,7 @@ int main() {
                 ImGui::Combo("Using?", &algoSelected, algoOptions, sizeof(algoOptions)/sizeof(*algoOptions),-1);
                 if(algoSelected == 1)
                     ImGui::Combo("Heuristic?", &heuristicSelected, heuristicOptions, sizeof(heuristicOptions)/sizeof(*heuristicOptions), -1);
+                ImGui::Combo("Constraint?",&constraintSelected, constraintOptions,sizeof(constraintOptions)/sizeof(*constraintOptions), -1);
                 ImGui::Text("From: \t%s %s\t",start->data.name, start->data.abv);
                 ImGui::Text("To:   \t%s %s\t",end->data.name, end->data.abv);
                 ImGui::Checkbox("Animations", &animations);
@@ -432,11 +439,32 @@ int main() {
 
                 uint32_t (*heuristicFunc)(GraphNode<Airport>*,GraphNode<Airport>*)=NULL;
                 switch (heuristicSelected){
-                case 0:     heuristicFunc = &zeroHeuristic;    break;
+                case 0:     heuristicFunc = &zero;    break;
                 case 1:     heuristicFunc = &Euclidean;        break;
                 case 2:     heuristicFunc = &TaxiCab;          break;
                 default:    break;
                 }
+
+                uint32_t (*pathcostFunc)(GraphNode<Airport>*, GraphNode<Airport>*) = NULL;
+                switch (constraintSelected){
+                case 0:     pathcostFunc = &randomCost;     break;
+                case 1:     pathcostFunc = &unity;          break;
+                case 2:     pathcostFunc = &Euclidean;      break;
+                case 3:     pathcostFunc = &moneyCost;      break;
+                default:    break;
+                }
+                // change path based on constraint
+                while (auto airport = ports.nodes.iterate()){
+                    while (auto path = airport->data->neighbours.iterate()){
+                        uint32_t wt = pathcostFunc(airport->data, path->data.to);
+                        if (wt > maxWt)
+                            maxWt = wt;
+                        if (wt < minWt)
+                            minWt = wt;
+                        path->data.weight = wt;
+                    }
+                }
+
 
                 switch (algoSelected){
                 case 0:     cost = ports.Dijkstra(start, end, &path);           break;
