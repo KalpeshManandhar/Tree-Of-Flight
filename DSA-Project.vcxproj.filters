@@ -92,9 +92,6 @@
     <ClInclude Include="src\throwaway.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\timers.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="out\plane.png">

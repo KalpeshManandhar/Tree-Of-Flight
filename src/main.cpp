@@ -5,8 +5,6 @@
 #endif
 
 
-#include "timers.hpp"
-
 #include "graph.h"
 #include "file.h"
 #include "renderers.hpp"
@@ -130,10 +128,6 @@ int main() {
 
     // cost of the returned path
     uint32_t cost = 0;
-
-    //Log file setup
-    std::ofstream log_file("log_file.log", std::ios::app | std::ios::out);
-    //log_file << LOG_FILE_DATE_TIME;
 
     Context::init();
     ImGui::StyleColorsDark();
@@ -291,9 +285,6 @@ int main() {
 
     Timer f_timer;
     f_timer.reset();
-
-    //Timer purpose analyzer
-    Analyzer alz = MAKE_ANALYZER(General_Analyzer);
 
 
 #ifdef  NDEBUG
@@ -669,11 +660,8 @@ int main() {
 
         Context::finish_rendering();
 
-        alz.loop();
 
     }
-
-    log_file << alz;
 
     Context::clean();
     return 0;

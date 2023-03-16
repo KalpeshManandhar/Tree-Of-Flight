@@ -174,7 +174,6 @@
     <ClInclude Include="src\graph.h" />
     <ClInclude Include="src\renderers.hpp" />
     <ClInclude Include="src\throwaway.h" />
-    <ClInclude Include="src\timers.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad\glad\glad.c" />
