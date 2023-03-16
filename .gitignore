@@ -1,0 +1,10 @@
+/Intermediates/*
+/Intermediates/
+.vs
+.vscode
+*.exe
+*.pdb
+*.log
+*.iobj
+*.ipdb
+*.ilk

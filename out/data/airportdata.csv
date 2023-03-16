@@ -1,0 +1,855 @@
+Vietnam,Van Don Airport,VDO,21.1138,107.419
+Vietnam,Thanh Hoa Airport,THD,19.8998,105.465
+Vietnam,Tamky Airport,VCL,15.4222,108.704
+Vietnam,Con Dao Airport,VCS,8.70093,106.611
+Vietnam,Tuy Hoa Airport,TBB,13.0494,109.334
+Vietnam,Quy Nhon Airport,UIH,13.7667,109.05
+Vietnam,Dong Hoi Airport,VDH,17.5134,106.59
+Vietnam,Rachgia Airport,VKG,10.0,105.1
+Vietnam,Vinh Airport,VII,18.7375,105.671
+Vietnam,Cantho Airport,VCA,10.05,105.767
+Vietnam,Ho Chi Minh City Airport,SGN,10.8189,106.652
+Vietnam,Pleiku Airport,PXU,14.0044,108.017
+Vietnam,Phu Quoc Airport,PQC,10.2269,103.967
+Vietnam,Nha Trang Airport,CXR,11.9981,109.219
+Vietnam,Hue Airport,HUI,16.4014,107.702
+Vietnam,Haiphong Airport,HPH,20.8194,106.725
+Vietnam,Hanoi Airport,HAN,21.2211,105.807
+Vietnam,Da Lat Airport,DLI,11.75,108.367
+Vietnam,Dien Bion Phu Airport,DIN,21.3975,103.008
+Vietnam,Da Nang Airport,DAD,16.0439,108.199
+Vietnam,Ca Mau Airport,CAH,9.17694,105.178
+Vietnam,Buon Ma Thuot Airport,BMV,12.6683,108.12
+Uzbekistan,Urganch Airport,UGC,41.5842,60.6417
+Uzbekistan,Termiz Airport,TMJ,37.277,67.3238
+Uzbekistan,Navoi Airport,NVI,40.1164,65.1658
+Uzbekistan,Namangan Airport,NMA,40.9844,71.5567
+Uzbekistan,Nukus Airport,NCU,42.4867,59.6228
+Uzbekistan,Qarshi Airport,KSQ,38.8019,65.7747
+Uzbekistan,Fergana Airport,FEG,40.3614,71.7447
+Uzbekistan,Andijan Airport,AZN,40.7278,72.2939
+Uzbekistan,Tashkent Airport,TAS,41.2578,69.2811
+Uzbekistan,Samarkand Airport,SKD,39.7006,66.9847
+Uzbekistan,Bukhara Airport,BHK,39.775,64.4833
+Turkmenistan,Dasoguz Airport,TAZ,41.7635,59.8337
+Turkmenistan,Balkanabat Airport,BKN,39.4806,54.3661
+Turkmenistan,Turkmenbashi Airport,KRW,40.05,53.0
+Turkmenistan,Mary Airport,MYP,37.6067,61.9014
+Turkmenistan,Turkmenabat Airport,CRZ,39.0833,63.6133
+Turkmenistan,Ashgabat Airport,ASB,37.9869,58.3608
+Timor Leste,Dili Airport,DIL,-8.54667,125.525
+Thailand,Mae Sot Airport,MAQ,16.702,98.5437
+Thailand,Nakhon Phanom Airport,KOP,17.3853,104.642
+Thailand,Pai Airport,PYY,19.3717,98.4367
+Thailand,Hua Hin Airport,HHQ,12.6361,99.9514
+Thailand,Udon Thani Airport,UTH,17.3864,102.788
+Thailand,Samui Airport,USM,9.55,100.067
+Thailand,Suratthani Airport,URT,9.13611,99.1392
+Thailand,Ranong Airport,UNN,9.95287,98.6085
+Thailand,Ubon Ratchathani Airport,UBP,15.2514,104.87
+Thailand,Trang Airport,TST,7.50861,99.6158
+Thailand,Sukhothai Airport,THS,17.2378,99.8183
+Thailand,Trat Airport,TDX,12.2744,102.319
+Thailand,Sakon Nakhon Airport,SNO,17.1953,104.119
+Thailand,Roi Et Airport,ROI,16.1167,103.774
+Thailand,Pattaya Airport,UTP,12.6797,101.005
+Thailand,Phrae Airport,PRH,18.1317,100.164
+Thailand,Phitsanulok Airport,PHS,16.7831,100.279
+Thailand,Nakhon Si Thammarat Airport,NST,8.53972,99.9447
+Thailand,Nan Airport,NNT,18.7756,100.773
+Thailand,Narathiwat Airport,NAW,6.52333,101.745
+Thailand,Nakhon Ratchasima Airport,NAK,14.9536,102.312
+Thailand,Lampang Airport,LPT,18.2722,99.5042
+Thailand,Loei Airport,LOE,17.4458,101.727
+Thailand,Khon Kaen Airport,KKC,16.4644,102.782
+Thailand,Krabi Airport,KBV,8.09583,98.9889
+Thailand,Phuket Airport,HKT,8.11056,98.3125
+Thailand,Mae Hong Son Airport,HGN,19.3017,97.975
+Thailand,Hat Yai Airport,HDY,6.93278,100.395
+Thailand,Chiang Mai Airport,CNX,18.7714,98.9628
+Thailand,Chumphon Airport,CJM,10.493,99.18
+Thailand,Chiang Rai Airport,CEI,19.9522,99.8831
+Thailand,Buri Ram Airport,BFV,15.2267,103.251
+Tajikistan,Kurgan Tyube Airport,KQT,37.8664,68.8644
+Tajikistan,Kulob Airport,TJU,37.9839,69.8036
+Tajikistan,Khujand Airport,LBD,40.2153,69.6947
+Tajikistan,Dushanbe Airport,DYU,38.5433,68.825
+Taiwan,Orchid Island Airport,KYD,22.0278,121.536
+Taiwan,Green Island Airport,GNI,22.6724,121.467
+Taiwan,Wang'an Airport,WOT,23.3673,119.502
+Taiwan,Cimei Airport,CMJ,23.2118,119.418
+Taiwan,Kinmen Airport,KNH,24.4206,118.344
+Taiwan,Taitung Airport,TTT,22.7931,121.182
+Taiwan,Tainan Airport,TNN,22.9503,120.206
+Taiwan,Taichung Airport,RMQ,24.265,120.621
+Taiwan,Makung Airport,MZG,23.5686,119.628
+Taiwan,Kaohsiung Airport,KHH,22.5772,120.35
+Taiwan,Hualien Airport,HUN,24.0272,121.618
+Taiwan,Hengchun Old Town Airport,HCN,22.0396,120.733
+Taiwan,Chiayi City Airport,CYI,23.4631,120.393
+Sri Lanka,Hingurakgoda Airport,HIM,8.05214,80.9802
+Sri Lanka,Batticaloa Airport,BTC,7.70519,81.6773
+Sri Lanka,Hambantota Airport,HRI,6.29192,81.1209
+Sri Lanka,Weerawila Airport,WRZ,6.25692,81.2363
+Sri Lanka,Jaffna Airport,JAF,9.79213,80.0701
+Sri Lanka,Dikwella Airport,DIW,5.99083,80.7333
+Sri Lanka,Bentota River Airport,BJT,6.41667,79.9833
+Sri Lanka,Trincomalee Airport,TRR,8.53333,81.1833
+Sri Lanka,Hatton Airport,NUF,6.90034,80.5966
+Sri Lanka,Koggala Airport,KCT,5.99361,80.3203
+Sri Lanka,Sigiriya Airport,GIU,7.95,80.7167
+Philippines,Sicogon Airport,ICO,11.4618,123.252
+Philippines,Barangay Funda-Dalipe Airport,EUQ,10.7606,121.932
+Philippines,Balesin Island Airport,BSI,14.4159,122.036
+Philippines,Busuanga Island Airport,USU,12.1207,120.1
+Philippines,Subic Bay Freeport Zone Airport,SFS,14.7954,120.283
+Philippines,Marinduque Airport,MRQ,13.3583,121.828
+Philippines,Cuyo Airport,CYU,10.8603,121.07
+Philippines,Ormoc Airport,OMC,11.0555,124.566
+Philippines,Borongan Airport,BPR,11.6759,125.478
+Philippines,Tandag Airport,TDG,9.07211,126.171
+Philippines,El Nido Airport,ENI,11.2022,119.416
+Philippines,Del Carmen Airport,IAO,9.85917,126.015
+Philippines,Virac Airport,VRC,13.5795,124.212
+Philippines,Tawi-Tawi Airport,TWT,5.04527,119.743
+Philippines,Tuguegarao City Airport,TUG,17.6383,121.731
+Philippines,Tablas Airport,TBH,12.3667,122.0
+Philippines,Tacloban Airport,TAC,11.2275,125.028
+Philippines,San Jose Airport,SJI,12.3614,121.047
+Philippines,Pagadian Airport,PAG,7.82722,123.458
+Philippines,Ozamis Airport,OZC,8.17861,123.842
+Philippines,Caticlan Airport,MPH,11.9244,121.954
+Philippines,Masbate Airport,MBT,12.3694,123.629
+Philippines,Kalibo Airport,KLO,11.6794,122.376
+Philippines,General Santos Airport,GES,6.10639,125.235
+Philippines,Dipolog Airport,DPL,8.60139,123.334
+Philippines,Cauayan Airport,CYZ,16.9167,121.75
+Philippines,Calbayog Airport,CYP,12.0728,124.545
+Philippines,Catarman Airport,CRM,12.5025,124.636
+Philippines,Cotabato City Airport,CBO,7.16331,124.214
+Philippines,Butuan Airport,BXU,8.95139,125.478
+Philippines,Basco Airport,BSO,20.4514,121.98
+Philippines,Iloilo City Airport,ILO,10.7131,122.545
+Philippines,Zamboanga Airport,ZAM,6.9225,122.06
+Philippines,Naga Airport,WNP,13.585,123.27
+Philippines,Tagbilaran City Airport,TAG,9.66417,123.853
+Philippines,Surigao Airport,SUG,9.7575,125.479
+Philippines,Roxas City Airport,RXS,11.5978,122.752
+Philippines,Puerto Princesa City Airport,PPS,9.74222,118.759
+Philippines,Legaspi Airport,LGP,13.1569,123.746
+Philippines,Laoag Airport,LAO,18.1781,120.531
+Philippines,Davao City Airport,DVO,7.12528,125.646
+Philippines,Dumaguete Airport,DGT,9.33361,123.301
+Philippines,Cagayan de Oro Airport,CGY,8.41556,124.611
+Philippines,Camiguin Airport,CGM,9.25361,124.707
+Philippines,Cebu Airport,CEB,10.3075,123.979
+Philippines,Bacolod Airport,BCD,10.7683,123.017
+Nepal,Rajbiraj Airport,RJB,26.5088,86.7371
+Nepal,Surkhet Airport,SKH,28.1018,81.6673
+Nepal,Manang Airport,NGX,28.6417,84.0864
+Nepal,Tumlingtar Airport,TMI,27.3157,87.1948
+Nepal,Pipara Simara Airport,SIF,27.1634,84.9802
+Nepal,Phaplu Airport,PPL,27.5158,86.5845
+Nepal,Lukla Airport,LUA,27.6878,86.7314
+Nepal,Jumla Airport,JUM,29.2744,82.1933
+Nepal,Jomsom Airport,JMO,28.7819,83.7232
+Nepal,Janakpur Airport,JKR,26.7333,85.9333
+Nepal,Simikot Airport,IMK,29.9711,81.8187
+Nepal,Dolpa Airport,DOP,28.9853,82.8195
+Nepal,Dhangarhi Airport,DHI,28.25,80.675
+Nepal,Bhairawa Airport,BWA,27.5058,83.4164
+Nepal,Biratnagar Airport,BIR,26.4814,87.2642
+Nepal,Bharatpur Airport,BHR,27.6667,84.4167
+Nepal,Pokhara Airport,PKR,28.2006,83.9814
+Nepal,Kathmandu Airport,KTM,27.6967,85.3592
+Nepal,Nepalganj Airport,KEP,28.1036,81.6669
+Nepal,Bhadrapur Airport,BDP,26.5667,88.0833
+Myanmar,Magway Airport,MWQ,20.1532,94.9686
+Myanmar,Manaung Airport,MGU,18.846,93.6836
+Myanmar,Chanmyathazi Airport,VBC,21.9405,96.0896
+Myanmar,Pyay Airport,PRU,18.825,95.2686
+Myanmar,Ann Airport,VBA,19.7699,94.0268
+Myanmar,Bokpyin Airport,VBP,11.1544,98.7346
+Myanmar,Homalin Airport,HOX,24.8842,94.9208
+Myanmar,Dawei Airport,TVY,14.0993,98.2046
+Myanmar,Tachilek Airport,THL,20.4853,99.935
+Myanmar,Thandwe Airport,SNW,18.4608,94.3
+Myanmar,Nyaung-U Airport,NYU,21.2,94.9667
+Myanmar,Mong Hsat Airport,MOG,20.5167,99.2569
+Myanmar,Myeik Airport,MGZ,12.4397,98.6214
+Myanmar,Loikaw Airport,LIW,19.6914,97.2147
+Myanmar,Kyaukpyu Airport,KYP,19.4264,93.5347
+Myanmar,Khamti Airport,KHM,25.9878,95.6742
+Myanmar,Kengtung Airport,KET,21.3017,99.6361
+Myanmar,Kawthaung Airport,KAW,10.0492,98.5381
+Myanmar,Heho Airport,HEH,20.7469,96.7919
+Myanmar,Putao Airport,PBU,27.33,97.4264
+Myanmar,Myitkyina Airport,MYT,25.3836,97.3519
+Myanmar,Lashio Airport,LSH,22.9778,97.7522
+Myanmar,Kalaymyo Airport,KMV,23.1833,94.05
+Myanmar,Monywa Airport,NYW,22.14,95.093
+Myanmar,Mawlamyine Airport,MNU,16.4447,97.6606
+Myanmar,Bhamo Airport,BMO,24.2667,97.25
+Myanmar,Nay Pyi Taw Airport,NYT,19.6225,96.2014
+Myanmar,Yangon Airport,RGN,16.9072,96.1333
+Myanmar,Mandalay Airport,MDL,21.7022,95.9781
+Myanmar,Sittwe Airport,AKY,20.1328,92.8725
+Mongolia,Khatgal Airport,HTM,50.4442,100.135
+Mongolia,Uliastai Airport,ULZ,47.6896,96.5586
+Mongolia,Ulgit Airport,ULG,48.9667,89.9667
+Mongolia,Moron Airport,MXV,49.6642,100.096
+Mongolia,Altai Airport,LTI,46.3743,96.2327
+Mongolia,Khovd Airport,HVD,47.9542,91.6281
+Mongolia,Dalanzadgad Airport,DLZ,43.5917,104.43
+Mongolia,Choibalsan Airport,COQ,48.1356,114.646
+Maldives,Gnaviyani Atoll Airport,FVM,-0.309444,73.4325
+Maldives,Thaa Atoll Airport,TMF,2.21225,73.1532
+Maldives,Shaviyani Atoll Airport,FND,6.15757,73.2869
+Maldives,Laamu Atoll Airport,KDO,1.85833,73.5197
+Maldives,Addu Atoll Airport,GAN,-0.693333,73.1556
+Maldives,Gaafu Alifu Atoll Airport,GKK,0.730833,73.4331
+Maldives,Raa Atoll Airport,IFU,5.70877,73.0249
+Maldives,Haa Alif Atoll Airport,HRF,6.97267,72.8945
+Maldives,Baa Atoll Airport,DRV,5.15452,73.1338
+Maldives,Lhaviyani Atoll Airport,LMV,5.45793,73.3704
+Maldives,Noonu Atoll Airport,NMF,5.82597,73.4771
+Maldives,North Male Atoll Airport,MLE,4.18878,73.5286
+Malaysia,Mulu Airport,MZV,4.04924,114.811
+Malaysia,Tanjung Manis Airport,TGC,2.17721,111.202
+Malaysia,Long Seridan Airport,ODN,3.97611,115.063
+Malaysia,Marudi Airport,MUR,4.1775,114.322
+Malaysia,Mukah Airport,MKM,2.90694,112.075
+Malaysia,Lawas Airport,LWY,4.84917,115.403
+Malaysia,Long Akah Airport,LKH,3.3,114.783
+Malaysia,Long Lellang Airport,LGL,3.45944,115.179
+Malaysia,Long Banga Airport,LBP,3.2,115.4
+Malaysia,Kudat Airport,KUD,6.92333,116.837
+Malaysia,Kerteh Airport,KTE,4.53333,103.433
+Malaysia,Bakalalan Airport,BKM,3.97389,115.617
+Malaysia,Kuala Terengganu Airport,TGG,5.38139,103.105
+Malaysia,Tawau Airport,TWU,4.31333,118.122
+Malaysia,Sandakan Airport,SDK,5.90111,118.055
+Malaysia,Sibu Airport,SBW,2.26417,111.982
+Malaysia,Penang Airport,PEN,5.29722,100.277
+Malaysia,Miri Airport,MYY,4.32528,113.988
+Malaysia,Melaka Airport,MKZ,2.26306,102.253
+Malaysia,Limbang Airport,LMN,4.80806,115.01
+Malaysia,Langkawi Airport,LGK,6.33333,99.7333
+Malaysia,Lahad Datu Airport,LDU,5.03306,118.321
+Malaysia,Labuan Airport,LBU,5.30167,115.248
+Malaysia,Kuantan Airport,KUA,3.76972,103.209
+Malaysia,Kuching Airport,KCH,1.48417,110.344
+Malaysia,Kota Bharu Airport,KBR,6.16611,102.293
+Malaysia,Johor Bahru Airport,JHB,1.64056,103.67
+Malaysia,Ipoh Airport,IPH,4.56917,101.093
+Malaysia,Bintulu Airport,BTU,3.12417,113.02
+Malaysia,Kota Kinabalu Airport,BKI,5.93722,116.053
+Malaysia,Bario Airport,BBN,3.73472,115.478
+Malaysia,Alor Setar Airport,AOR,6.19444,100.401
+Laos,Phonsavan Airport,XKH,19.4401,103.168
+Laos,Boun Neau Airport,PCQ,21.648,101.902
+Laos,Xam Nua Airport,NEU,20.4182,104.066
+Laos,Attapu Airport,AOU,14.8194,106.821
+Laos,Ban Houayxay Airport,HOE,20.2628,100.434
+Laos,Savannakhet Airport,ZVK,16.5333,104.75
+Laos,Vientiane Airport,VTE,17.9883,102.563
+Laos,Pakse Airport,PKZ,15.1319,105.781
+Laos,Luang Namtha Airport,LXG,20.9667,101.4
+Kyrgyzstan,Tamchy Airport,IKU,42.5859,76.7062
+Kyrgyzstan,Osh Airport,OSS,40.6089,72.7933
+Kyrgyzstan,Bishkek Airport,FRU,43.0614,74.4775
+South Korea,Muan Airport,MWX,34.9914,126.383
+South Korea,Won-ju Airport,WJU,37.4592,127.977
+South Korea,Gunsan Airport,KUV,35.9039,126.616
+South Korea,Jinju Airport,HIN,35.0886,128.07
+South Korea,Yangyang Airport,YNY,38.0588,128.663
+South Korea,Ulsan Airport,USN,35.5936,129.352
+South Korea,Daegu Airport,TAE,35.8942,128.659
+South Korea,Yeosu Airport,RSU,34.8422,127.617
+South Korea,Busan Airport,PUS,35.1403,129.063
+South Korea,Gwangju Airport,KWJ,35.1264,126.809
+South Korea,Pohang Airport,KPO,35.9847,129.434
+South Korea,Jeju Airport,CJU,33.5114,126.493
+South Korea,Cheongju Airport,CJJ,36.7167,127.499
+North Korea,Pyongyang Airport,FNJ,39.2236,125.67
+Kazakhstan,Turkistan Airport,HSA,43.3156,68.5469
+Kazakhstan,Taraz Airport,DMB,42.8664,71.2934
+Kazakhstan,Taldykorgan Airport,TDK,45.1251,78.4478
+Kazakhstan,Zaysan Airport,SZI,47.4862,84.8856
+Kazakhstan,Balkhash Airport,BXH,46.8908,75.0034
+Kazakhstan,Urzhar Airport,UZR,47.0911,81.6652
+Kazakhstan,Kokshetau Airport,KOV,53.3287,69.5894
+Kazakhstan,Uralsk Airport,URA,51.1508,51.5431
+Kazakhstan,Uste-Kamenogorsk Airport,UKK,50.0367,82.4936
+Kazakhstan,Pavlodar Airport,PWQ,52.195,77.0739
+Kazakhstan,Petropavlovsk Airport,PPK,54.7744,69.1839
+Kazakhstan,Semipalatinsk Airport,PLX,50.3514,80.2344
+Kazakhstan,Kzyl-Orda Airport,KZO,45.5167,65.8333
+Kazakhstan,Kostanay Airport,KSN,53.2069,63.5503
+Kazakhstan,Karaganda Airport,KGF,49.6708,73.3344
+Kazakhstan,Zhezkazgan Airport,DZN,47.71,67.7403
+Kazakhstan,Shymkent Airport,CIT,42.3642,69.4789
+Kazakhstan,Aqtobe Airport,AKX,50.2458,57.2067
+Kazakhstan,Nur-Sultan Airport,TSE,51.0231,71.4669
+Kazakhstan,Aktau Airport,SCO,43.86,51.0919
+Kazakhstan,Atyrau Airport,GUW,47.1219,51.8214
+Kazakhstan,Almaty Airport,ALA,43.3533,77.0422
+Japan,Shimojishima Airport,SHI,24.8273,125.148
+Japan,Masuda Airport,IWJ,34.6784,131.797
+Japan,Obihiro Airport,OBO,42.7322,143.213
+Japan,Okushiri Airport,OIR,42.0725,139.435
+Japan,Wakkanai Airport,WKJ,45.3996,141.797
+Japan,Miyakojima Airport,MMY,24.7794,125.297
+Japan,Tarama Airport,TRA,24.654,124.677
+Japan,Yonaguni Airport,OGN,24.4653,122.98
+Japan,Minamidaito Airport,MMD,25.846,131.265
+Japan,Ehime Prefecture Airport,MYJ,33.829,132.704
+Japan,Kikaiga Shima Airport,KKX,28.3214,129.928
+Japan,Iwakuni Airport,IWK,34.1353,132.236
+Japan,Amakusa Airport,AXJ,32.4829,130.155
+Japan,Wadomari Airport,OKE,27.4332,128.705
+Japan,Tanegashima Airport,TNE,30.6092,130.992
+Japan,Yoronjima Airport,RNJ,27.0333,128.433
+Japan,Matsumoto Airport,MMJ,36.1647,137.926
+Japan,Kitadaito Airport,KTD,25.9446,131.324
+Japan,Kume Jima Airport,UEO,26.3636,126.714
+Japan,Tokunoshima Airport,TKN,27.8364,128.881
+Japan,Shonai Airport,SYO,38.8122,139.787
+Japan,Nanki Shirahama Airport,SHM,33.6622,135.364
+Japan,Nakashibetsu Airport,SHB,43.5775,144.96
+Japan,Rishiri Airport,RIS,45.2419,141.186
+Japan,Noshiro Airport,ONJ,40.1919,140.371
+Japan,Oki Island Airport,OKI,36.1811,133.325
+Japan,Memambetsu Airport,MMB,43.8806,144.164
+Japan,Monbetsu Airport,MBE,44.3039,143.404
+Japan,Kitakyushu Airport,KKJ,33.8458,131.035
+Japan,Izumo Airport,IZO,35.4136,132.89
+Japan,Hachijo Airport,HAC,33.115,139.786
+Japan,Fukue Airport,FUJ,32.6664,128.833
+Japan,Amami O Shima Airport,ASJ,28.4306,129.712
+Japan,Ibaraki Airport,IBR,36.1783,140.418
+Japan,Shizuoka Airport,FSZ,34.6667,138.167
+Japan,Okinawa Airport,OKA,26.1958,127.646
+Japan,Kobe Airport,UKB,34.6328,135.224
+Japan,Yonago Airport,YGJ,35.4922,133.236
+Japan,Ube Airport,UBJ,33.93,131.279
+Japan,Tottori Airport,TTJ,35.53,134.167
+Japan,Tsushima Airport,TSJ,34.285,129.331
+Japan,Toyama Airport,TOY,36.6483,137.188
+Japan,Tokushima Airport,TKS,34.1328,134.607
+Japan,Toyooka Airport,TJH,35.5163,134.789
+Japan,Takamatsu Airport,TAK,34.2142,134.016
+Japan,Sendai Airport,SDJ,38.1397,140.917
+Japan,Okayama Airport,OKJ,34.7569,133.855
+Japan,Oita Airport,OIT,33.4794,131.737
+Japan,Wajima Airport,NTQ,37.2903,136.965
+Japan,Nagasaki Airport,NGS,32.9169,129.914
+Japan,Misawa Airport,MSJ,40.7033,141.368
+Japan,Yakushima Airport,KUM,30.3856,130.659
+Japan,Kushiro Airport,KUH,43.0408,144.193
+Japan,Kagoshima Airport,KOJ,31.8033,130.719
+Japan,Komatsu Airport,KMQ,36.3947,136.407
+Japan,Kumamoto Airport,KMJ,32.8372,130.855
+Japan,Miyazaki Airport,KMI,31.8772,131.449
+Japan,Niigata Airport,KIJ,37.9558,139.121
+Japan,Kochi Airport,KCZ,33.5461,133.669
+Japan,Ishigaki Island Airport,ISG,24.3444,124.187
+Japan,Iki Airport,IKI,33.75,129.783
+Japan,Saga Airport,HSG,33.1497,130.302
+Japan,Hanamaki Airport,HNA,39.4286,141.135
+Japan,Hakodate Airport,HKD,41.77,140.822
+Japan,Hiroshima Airport,HIJ,34.4361,132.919
+Japan,Yamagata Airport,GAJ,38.4119,140.371
+Japan,Fukuoka Airport,FUK,33.5858,130.451
+Japan,Fukushima Airport,FKS,37.2284,140.429
+Japan,Akita Airport,AXT,39.6156,140.219
+Japan,Aomori Airport,AOJ,40.7347,140.691
+Japan,Asahikawa Airport,AKJ,43.6708,142.447
+Indonesia,Dabo Airport,SIQ,-0.496331,104.555
+Indonesia,Namlea Airport,NAM,-3.2334,127.086
+Indonesia,Tojo Una Una Airport,OJU,-0.865735,121.623
+Indonesia,Tomia Airport,TQQ,-5.76758,123.919
+Indonesia,Melak Airport,GHS,-0.205914,115.761
+Indonesia,Serui Airport,ZRI,-1.87416,136.24
+Indonesia,Majalengka Regency Airport,KJT,-6.65206,108.158
+Indonesia,Rengat Airport,RGT,-0.3522,102.333
+Indonesia,Jemaja Airport,LMU,2.96295,105.755
+Indonesia,Bungku Airport,MOH,-2.20303,121.661
+Indonesia,Tiakur Airport,JIO,-8.14087,127.91
+Indonesia,Sumenep Regency Airport,SUP,-7.02425,113.89
+Indonesia,Kerinci Regency Airport,KRC,-2.09125,101.462
+Indonesia,Kau Airport,KAZ,1.31212,128.485
+Indonesia,Waisai Airport,RJM,-0.430289,130.773
+Indonesia,Cijulang Airport,CJN,-7.72079,108.488
+Indonesia,Central Aceh Regency Airport,TXE,4.44826,96.8351
+Indonesia,Nagan Raya Regency Airport,MEQ,4.04653,96.2466
+Indonesia,Selayar Regency Airport,KSR,-6.17843,120.439
+Indonesia,South Tapanuli Regency Airport,AEG,1.57749,99.2786
+Indonesia,Sabang Airport,SBG,5.87393,95.3404
+Indonesia,Natuna Ranai Airport,NTX,3.90589,108.388
+Indonesia,Zugapa Airport,UGU,-3.73956,137.032
+Indonesia,Rote Airport,RTI,-10.48,123.376
+Indonesia,Morotai Airport,OTI,2.04209,128.319
+Indonesia,Siborong-Borong Airport,DTB,2.25972,98.9953
+Indonesia,Makassar Airport,UPG,-5.06167,119.554
+Indonesia,Pangkal Pinang Airport,PGK,-2.16667,106.133
+Indonesia,Wakatobi Airport,WNI,-5.32644,123.595
+Indonesia,Muna Airport,RAQ,-4.91667,122.583
+Indonesia,Lahat Airport,PXA,-4.01872,103.386
+Indonesia,Palopo Airport,LLO,-3.08626,120.243
+Indonesia,Dekai Airport,DEX,-4.8541,139.486
+Indonesia,Sibolga Airport,FLZ,1.55583,98.8889
+Indonesia,Buru Island Airport,NRE,-3.85207,126.703
+Indonesia,Belitung Airport,TJQ,-2.74583,107.755
+Indonesia,Solo Airport,SOC,-7.51611,110.757
+Indonesia,Jember Airport,JBB,-8.18,113.7
+Indonesia,Banyuwangi Airport,BWX,-8.3,114.33
+Indonesia,Bintan Airport,TNJ,0.921662,104.527
+Indonesia,Wamena Airport,WMX,-4.08333,138.933
+Indonesia,Waingapu Airport,WGP,-9.66948,120.302
+Indonesia,Buol Airport,UOL,1.10505,121.415
+Indonesia,Tana Toraja Airport,TTR,-3.04297,119.82
+Indonesia,Ternate Airport,TTE,0.831389,127.381
+Indonesia,Tasikmalaya Airport,TSY,-7.34691,108.246
+Indonesia,Tarakan Airport,TRK,3.32667,117.566
+Indonesia,Tanahmerah Airport,TMH,-6.09725,140.303
+Indonesia,Tambolaka Airport,TMC,-9.40968,119.246
+Indonesia,Tolitoli Airport,TLI,1.12171,120.793
+Indonesia,Bandar Lampung Airport,TKG,-5.24222,105.179
+Indonesia,Tanjung Selor Airport,TJS,2.83639,117.374
+Indonesia,Tembagapura Airport,TIM,-4.52833,136.887
+Indonesia,Saumlaki Airport,SXK,-7.96667,131.317
+Indonesia,Sumbawa Besar Airport,SWQ,-8.48894,117.415
+Indonesia,Surabaya Airport,SUB,-7.37972,112.787
+Indonesia,Semarang Airport,SRG,-6.97139,110.374
+Indonesia,Sanana Airport,SQN,-2.09935,125.966
+Indonesia,Sintang Airport,SQG,0.0658736,111.476
+Indonesia,Sorong Airport,SOQ,-0.926389,131.121
+Indonesia,Sampit Airport,SMQ,-2.49917,112.975
+Indonesia,Sangatta Airport,SGQ,0.383795,117.543
+Indonesia,Ruteng Airport,RTG,-8.6,120.45
+Indonesia,Tanggetada Airport,PUM,-4.34191,121.524
+Indonesia,Putussibau Airport,PSU,0.835556,112.937
+Indonesia,Poso Airport,PSJ,-1.41675,120.658
+Indonesia,Pontianak Airport,PNK,-0.150833,109.404
+Indonesia,Palu Airport,PLW,-0.918611,119.91
+Indonesia,Palembang Airport,PLM,-2.89833,104.7
+Indonesia,Palangkaraya Airport,PKY,-2.225,113.943
+Indonesia,Pekanbaru Airport,PKU,0.460833,101.444
+Indonesia,Pangkalan Bun Airport,PKN,-2.70528,111.673
+Indonesia,Padang Airport,PDG,-0.875,100.352
+Indonesia,Oksibil Airport,OKL,-5.1,140.667
+Indonesia,Nangapinoh Airport,NPO,-0.349202,111.75
+Indonesia,Nunukan Airport,NNX,4.15,117.65
+Indonesia,Nabire Airport,NBX,-3.36667,135.5
+Indonesia,Naha Airport,NAH,3.68333,125.528
+Indonesia,Masamba Airport,MXB,-2.55423,120.324
+Indonesia,Pulau Matak Airport,MWK,3.31209,106.264
+Indonesia,Maumere Airport,MOF,-8.64056,122.237
+Indonesia,Melangguane Airport,MNA,4.01596,126.673
+Indonesia,Malang Airport,MLG,-7.92667,112.714
+Indonesia,Manokwari Airport,MKW,-0.891944,134.049
+Indonesia,Merauke Airport,MKQ,-8.52028,140.418
+Indonesia,Mamuju Airport,MJU,-2.58863,119.029
+Indonesia,Manado Airport,MDC,1.54917,124.926
+Indonesia,Lewoleba Airport,LWE,-8.38333,123.4
+Indonesia,Luwuk Airport,LUW,-1.03778,122.77
+Indonesia,Langgur Airport,LUV,-5.66167,132.731
+Indonesia,Lhokseumawe Airport,LSW,5.18116,97.1413
+Indonesia,Larantuka Airport,LKA,-8.35,122.983
+Indonesia,Labuan Bajo Airport,LBJ,-8.48667,119.889
+Indonesia,Labuha Airport,LAH,-0.637299,127.501
+Indonesia,Ketapang Airport,KTG,-1.81639,109.963
+Indonesia,Kupang Airport,KOE,-10.1717,123.671
+Indonesia,Kaimana Airport,KNG,-3.64444,133.696
+Indonesia,Kendari Airport,KDI,-4.08167,122.418
+Indonesia,Kotabaru Airport,KBU,-3.25,116.25
+Indonesia,Gorontalo Airport,GTO,0.653889,122.85
+Indonesia,Gunungsitoli Airport,GNS,1.28333,97.6167
+Indonesia,Galela Airport,GLX,1.83333,127.833
+Indonesia,Fak Fak Airport,FKQ,-2.92028,132.267
+Indonesia,Ende Airport,ENE,-8.84917,121.661
+Indonesia,Dumai Airport,DUM,1.6117,101.434
+Indonesia,Bali Airport,DPS,-8.74806,115.167
+Indonesia,Dobo Airport,DOB,-5.77167,134.212
+Indonesia,Jayapura Airport,DJJ,-2.57694,140.516
+Indonesia,Jambi Airport,DJB,-1.63806,103.644
+Indonesia,Cilacap Airport,CXP,-7.64517,109.034
+Indonesia,Babo Airport,BXB,-2.53699,133.438
+Indonesia,Baubau Airport,BUW,-5.46667,122.633
+Indonesia,Batu Licin Airport,BTW,-3.41151,116.0
+Indonesia,Banda Aceh Airport,BTJ,5.52361,95.4203
+Indonesia,Batam Airport,BTH,1.12111,104.119
+Indonesia,Balikpapan Airport,BPN,-1.26833,116.894
+Indonesia,Bima Airport,BMU,-8.53972,118.687
+Indonesia,Bengkulu Airport,BKS,-3.86361,102.339
+Indonesia,Bajawa Airport,BJW,-8.78333,120.967
+Indonesia,Biak Airport,BIK,-1.19,136.108
+Indonesia,Berau Airport,BEJ,2.16667,117.7
+Indonesia,Bandung Airport,BDO,-6.90056,107.576
+Indonesia,Banjarmasin Airport,BDJ,-3.44222,114.762
+Indonesia,Pulau Alor Airport,ARD,-8.25,124.75
+Indonesia,Ambon Airport,AMQ,-3.71028,128.089
+Indonesia,Atambua Airport,ABU,-9.33333,124.9
+Indonesia,Lombok Airport,LOP,-8.56083,116.095
+India,Itanagar Airport,HGI,27.0844,93.6053
+India,Deoghar Airport,DGH,24.4455,86.7061
+India,Tezu Airport,TEI,27.9406,96.1342
+India,Rourkela Airport,RRK,22.2535,84.8165
+India,Sindhudurg Airport,SDW,16.0004,73.5348
+India,Kushinagar Airport,KBK,26.7732,83.8964
+India,Hisar Airport,HSS,29.1784,75.7562
+India,Daman Airport,NMB,20.4337,72.8434
+India,Cooch Behar Airport,COH,26.3297,89.4699
+India,Car Nicobar Airport,CBD,9.1557,92.8224
+India,Bareilly Airport,BEK,28.4242,79.468
+India,Bilaspur Airport,PAB,21.9946,82.1146
+India,Orvakal Airport,KJB,15.7148,78.1783
+India,Darbhanga Airport,DBR,26.1977,85.9115
+India,Jagdalpur Airport,JGB,19.0756,82.0365
+India,Bidar Airport,IXX,17.9119,77.4909
+India,Keshod Airport,IXK,21.318,70.267
+India,Jharsuguda Airport,JRG,21.9161,84.0464
+India,Kannur Airport,CNN,11.9124,75.5513
+India,Pakyong Airport,PYG,27.2267,88.5877
+India,Pasighat Airport,IXT,28.0681,95.3348
+India,Kishangarh Airport,KQH,26.5895,74.817
+India,Adampur Airport,AIP,31.4257,75.7237
+India,Toranagallu Airport,VDY,15.1785,76.6282
+India,Shirdi Airport,SAG,19.6937,74.3944
+India,Salem Airport,SXV,11.7826,78.0619
+India,Mysore Airport,MYQ,12.2278,76.6582
+India,Kolhapur Airport,KLH,16.6652,74.2828
+India,Nanded Airport,NDC,19.1833,77.3348
+India,Rewa Airport,REW,24.503,81.2216
+India,Pathankot Airport,IXP,32.2237,75.6364
+India,Nashik Airport,ISK,20.1129,73.8938
+India,Ludhiana Airport,LUH,30.8505,75.957
+India,Bikaner Airport,BKB,28.0556,73.1963
+India,Pondicherry Airport,PNY,11.9655,79.8149
+India,Andal Airport,RDP,23.6176,87.2399
+India,Shimla Airport,SLV,31.0858,77.0661
+India,Kandla Airport,IXY,23.1116,70.104
+India,Rupsi Airport,RUP,26.1436,89.9067
+India,Porbandar Airport,PBD,21.6477,69.661
+India,Kanpur Airport,KNU,26.4032,80.4142
+India,Jaisalmer Airport,JSA,26.8935,70.8694
+India,Bathinda Airport,BUP,30.2679,74.7564
+India,Diu Airport,DIU,20.7137,70.9232
+India,Bhavnagar Airport,BHU,21.7538,72.1834
+India,Cuddapah Airport,CDP,14.5184,78.768
+India,Hubli Airport,HBX,15.36,75.0862
+India,Faizabad Airport,FBD,26.7567,82.1443
+India,Belgaum Airport,IXG,15.8592,74.6175
+India,Hyderabad Airport,HYD,17.4531,78.3842
+India,Visakhapatnam Airport,VTZ,17.7211,83.2244
+India,Varanasi Airport,VNS,25.4522,82.8594
+India,Vijayawada Airport,VGA,16.5306,80.7969
+India,Udaipur Airport,UDR,24.6178,73.8961
+India,Tiruchirapally Airport,TRZ,10.7653,78.7097
+India,Trivandrum Airport,TRV,8.48222,76.92
+India,Tirupati Airport,TIR,13.6325,79.5433
+India,Tezpur Airport,TEZ,26.7092,92.7847
+India,Tuticorin Airport,TCR,8.71667,78.0333
+India,Srinagar Airport,SXR,33.9872,74.7742
+India,Surat Airport,STV,21.1142,72.7417
+India,Shillong Airport,SHL,25.7,91.9833
+India,Raipur Airport,RPR,21.1803,81.7389
+India,Rajahmundry Airport,RJA,17.1103,81.8183
+India,Rajkot Airport,RAJ,22.3092,70.7794
+India,Pune Airport,PNQ,18.5822,73.9197
+India,Pantnagar Airport,PGH,29.0319,79.4736
+India,Patna Airport,PAT,25.5914,85.0881
+India,Nagpur Airport,NAG,21.0922,79.0472
+India,Chennai Airport,MAA,12.9944,80.1806
+India,Lucknow Airport,LKO,26.7606,80.8894
+India,Kullu Airport,KUU,31.8767,77.1544
+India,Jorhat Airport,JRH,26.7317,94.1756
+India,Jabalpur Airport,JLR,23.1778,80.0519
+India,Jamnagar Airport,JGA,22.4656,70.0125
+India,Jodhpur Airport,JDH,26.2511,73.0489
+India,Jaipur Airport,JAI,26.8242,75.8122
+India,Port Blair Airport,IXZ,11.6411,92.7297
+India,Aurangabad Airport,IXU,19.8628,75.3981
+India,Silchar Airport,IXS,24.9131,92.9786
+India,Ranchi Airport,IXR,23.3142,85.3217
+India,Madurai Airport,IXM,9.83444,78.0933
+India,Leh Airport,IXL,34.1358,77.5464
+India,Jammu Airport,IXJ,32.6892,74.8375
+India,Lilabari(Lakhimpur) Airport,IXI,27.2875,94.093
+India,Mangalore Airport,IXE,12.9614,74.89
+India,Allahabad (Prayagraj) Airport,IXD,25.4401,81.7341
+India,Chandigarh Airport,IXC,30.6733,76.7886
+India,Bagdogra Airport,IXB,26.6811,88.3286
+India,Agartala Airport,IXA,23.8869,91.2406
+India,Imphal Airport,IMF,24.76,93.8967
+India,Indore Airport,IDR,22.7217,75.8011
+India,Khajuraho Airport,HJR,24.8172,79.9186
+India,Gwalior Airport,GWL,26.2933,78.2278
+India,Gorakhpur Airport,GOP,26.7465,83.443
+India,Gaya Airport,GAY,24.7444,84.9511
+India,Guwahati Airport,GAU,26.1061,91.5858
+India,Dimapur Airport,DMU,25.8833,93.7667
+India,Dibrugarh Airport,DIB,27.4833,95.0167
+India,Dharamshala Airport,DHM,32.219,76.3234
+India,New Delhi Airport,DEL,28.5664,77.1031
+India,Dehradun Airport,DED,30.1897,78.1803
+India,Cochin Airport,COK,10.1518,76.393
+India,Coimbatore Airport,CJB,11.03,77.0433
+India,Kolkata Airport,CCU,22.6547,88.4467
+India,Kozhikode Airport,CCJ,11.1369,75.9553
+India,Mumbai Airport,BOM,19.0886,72.8681
+India,Bangalore Airport,BLR,12.95,77.6683
+India,Bhopal Airport,BHO,23.2875,77.3375
+India,Bhuj Airport,BHJ,23.2878,69.6703
+India,Vadodara Airport,BDQ,22.3361,73.2264
+India,Bhubaneshwar Airport,BBI,20.2444,85.8178
+India,Amritsar Airport,ATQ,31.7097,74.7972
+India,Ahmedabad Airport,AMD,23.0772,72.6347
+India,Aizawl Airport,AJL,23.7467,92.8028
+India,Agatti Island Airport,AGX,10.8236,72.1761
+India,Agra Airport,AGR,27.1558,77.9608
+Georgia,Kutaisi Airport,KUT,42.1767,42.4825
+Georgia,Tbilisi City Airport,TBS,41.6692,44.9547
+Georgia,Batumi Airport,BUS,41.6103,41.5997
+China,Ruoqiang Airport,RQA,39.0232,88.1672
+China,Songyuan Airport,YSQ,45.1429,124.8
+China,Holingol Airport,HUO,45.4632,119.663
+China,Longnan Airport,LNL,33.7505,105.742
+China,Lancang Airport,JMJ,22.4164,99.7866
+China,Bazhong Airport,BZX,31.7386,106.645
+China,Qilian Airport,HBQ,38.1771,100.253
+China,Renhuai Airport,WMT,27.7917,106.4
+China,Shaoyang Airport,WGN,27.239,111.468
+China,Yarkant Airport,QSZ,38.4142,77.2458
+China,Jiansanjiang Airport,JSJ,47.2105,132.638
+China,Wudalianchi Airport,DTU,48.5173,126.206
+China,Chengde Airport,CDE,40.9529,117.963
+China,Shangrao Airport,SQD,28.3803,117.961
+China,Cangyuan Airport,CWJ,23.1467,99.2462
+China,Zhalantun Airport,NZL,48.0137,122.737
+China,Baicheng Airport,DBC,45.5053,123.02
+China,Guoluo Prefecture Airport,GMQ,34.4714,100.245
+China,Qionghai Airport,QHX,19.2413,110.467
+China,Qiemo Airport,IQM,38.1443,85.5356
+China,Jiujiang Airport,JIU,29.4812,115.808
+China,Dinggou Airport,YTY,32.5602,119.717
+China,Yingkou Airport,YKH,40.667,122.235
+China,Dingxiang Airport,WUT,38.4735,112.957
+China,Shiyan Airport,WDS,32.587,110.91
+China,Ulanqab Airport,UCB,40.9881,113.14
+China,Sha County Airport,SQJ,26.3973,117.792
+China,Jingzhou Airport,SHS,30.3352,112.24
+China,Shihezi Airport,SHF,44.3061,86.0806
+China,Rizhao Airport,RIZ,35.4167,119.527
+China,Ninglang Airport,NLH,27.5438,100.757
+China,Dawu Airport,LLV,31.5612,114.127
+China,Linfen Airport,LFQ,36.1142,111.633
+China,Fuyun Airport,FYN,46.9941,89.5255
+China,Daocheng Airport,DCY,29.312,100.066
+China,Sanyuanpu Airport,TNH,42.2539,125.704
+China,Turpan Airport,TLQ,43.0285,89.1035
+China,Xigase Airport,RKZ,29.2669,88.8806
+China,Delingha Airport,HXD,37.3694,97.361
+China,Anshan Airport,AOG,41.1086,122.994
+China,Huatugou Airport,HTT,38.2563,90.8304
+China,"Yichun, Jiangxi Airport",YIC,27.8033,114.308
+China,Humen Airport,ZTI,22.8213,113.675
+China,Qinhuangdao Airport,BPE,39.9354,119.6
+China,Huizhou Airport,HUZ,23.0806,114.417
+China,Bole Airport,BPL,44.9003,82.3027
+China,Zhongshan Airport,ZGN,22.5686,113.479
+China,Shiquanhe Airport,NGQ,32.1019,80.0559
+China,Liupanshui Airport,LPF,26.5927,104.83
+China,Guyuan Airport,GYU,36.0159,106.243
+China,Shekou Airport,ZYK,22.4832,113.917
+China,Hongping Airport,HPG,31.6336,110.338
+China,Kangding Airport,KGT,30.13,101.752
+China,Hengyang Airport,HNY,26.8934,112.572
+China,Hongyuan Airport,AHJ,32.5292,102.357
+China,Erenhot Airport,ERL,43.4291,112.105
+China,Ejin Airport,EJN,42.0156,101.001
+China,Bayan Nur Airport,RLK,40.9264,107.739
+China,Arxan Airport,YIE,47.3096,119.923
+China,Alxa Right Banner Airport,RHT,39.2,101.68
+China,Alxa Left Banner Airport,AXF,38.8233,105.631
+China,Jiagedaqi Airport,JGD,50.42,124.07
+China,Fuyuan Airport,FYJ,48.1995,134.366
+China,Zhangjiakou Airport,ZQZ,40.7386,114.93
+China,Tangshan Airport,TVS,39.7242,118.0
+China,Zunyi Airport,ZYI,27.8,107.253
+China,Kaili Airport,KJH,26.9742,107.981
+China,Bijie Airport,BFJ,27.161,105.282
+China,Hechi Airport,HCJ,24.7839,107.7
+China,Zhangye Airport,YZY,38.8142,100.656
+China,Gannan Airport,GXH,34.8106,102.645
+China,Qianjiang Airport,JIQ,29.5146,108.834
+China,Jinchang Airport,JIC,38.5419,102.348
+China,Chizhou Airport,JUH,30.7403,117.687
+China,Huai'an Airport,HIA,33.7878,119.135
+China,Zhongwei Airport,ZHY,37.5728,105.154
+China,Yushu Airport,YUS,32.825,97.125
+China,Tianshui Airport,THQ,34.5551,105.869
+China,Tengchong Airport,TCZ,24.9378,98.4856
+China,Mohe Airport,OHE,52.9164,122.422
+China,Xinyuan Airport,NLT,43.4322,83.3822
+China,Changbaishan Airport,NBS,42.0833,127.6
+China,Nyingchi Airport,LZY,29.6219,94.3886
+China,Libo Airport,LLB,25.4528,107.962
+China,Yichun Airport,LDS,47.7505,128.975
+China,Burqin Airport,KJI,48.2211,86.9981
+China,Jixi Airport,JXA,45.2925,131.192
+China,Handan Airport,HDG,36.5258,114.425
+China,Daqing Airport,DQA,46.7556,125.137
+China,Baise Airport,AEB,23.72,106.96
+China,Zhuhai Airport,ZUH,22.0067,113.376
+China,Zhanjiang Airport,ZHA,21.2153,110.358
+China,Zhaotong Airport,ZAT,27.3244,103.755
+China,Yancheng Airport,YNZ,33.4261,120.203
+China,Yantai Airport,YNT,37.4017,121.372
+China,Yanji Airport,YNJ,42.8828,129.451
+China,Yiwu Airport,YIW,29.345,120.033
+China,Yining Airport,YIN,43.9553,81.3289
+China,Yichang Airport,YIH,30.5569,111.48
+China,Yuncheng Airport,YCU,35.1132,111.042
+China,Yibin Airport,YBP,28.8003,104.545
+China,Xuzhou Airport,XUZ,34.2294,117.246
+China,Xining Airport,XNN,36.5681,101.859
+China,Xiamen Airport,XMN,24.5442,118.128
+China,Xilinhot Airport,XIL,43.9196,115.967
+China,Xichang Airport,XIC,27.9892,102.184
+China,Xiangfan Airport,XFN,32.1506,112.291
+China,Wanzhou Airport,WXN,30.8369,108.406
+China,Wuzhou Airport,WUZ,23.4567,111.248
+China,Wuxi Airport,WUX,31.4947,120.429
+China,Wuyishan Airport,WUS,27.7017,118.001
+China,Wuhan Airport,WUH,30.7839,114.208
+China,Wuhai Airport,WUA,39.7936,106.809
+China,Wenzhou Airport,WNZ,27.9131,120.852
+China,Wenshan Airport,WNH,23.5636,104.334
+China,Weihai Airport,WEH,37.1872,122.229
+China,Weifang Airport,WEF,36.6469,119.119
+China,Yulin Airport,UYN,38.362,109.602
+China,Urumqi Airport,URC,43.9033,87.4746
+China,Taiyuan Airport,TYN,37.7469,112.628
+China,Huangshan Scenic Area Airport,TXN,29.7328,118.257
+China,Tianjin Airport,TSN,39.1244,117.346
+China,Jinan Airport,TNA,36.8572,117.216
+China,Tongliao Airport,TGO,43.5581,122.25
+China,Tongren Airport,TEN,27.8836,109.309
+China,Tacheng Airport,TCG,46.6728,83.3411
+China,Qingdao Airport,TAO,36.2661,120.374
+China,Shenzhen Airport,SZX,22.6392,113.811
+China,Suzhou Airport,SZV,31.3,120.633
+China,Sanya Airport,SYX,18.3028,109.412
+China,Simao Airport,SYM,22.7947,100.959
+China,Shantou Airport,SWA,23.4275,116.762
+China,Shijiazhuang Airport,SJW,38.2806,114.697
+China,Shenyang Airport,SHE,41.6397,123.483
+China,Panzhihua Airport,PZI,26.54,101.798
+China,Manzhouli Airport,NZH,49.5656,117.345
+China,Nantong Airport,NTG,32.0706,120.975
+China,Nanyang Airport,NNY,32.9811,112.616
+China,Nanning Airport,NNG,22.6096,108.172
+China,Nanjing Airport,NKG,31.7419,118.862
+China,Ningbo Airport,NGB,29.8267,121.462
+China,Qiqihar Airport,NDG,47.2397,123.918
+China,Nanchong Airport,NAO,30.7553,106.061
+China,Meixian Airport,MXZ,24.35,116.133
+China,Mianyang Airport,MIG,31.4289,104.741
+China,Mudanjiang Airport,MDG,44.5242,129.569
+China,Luzhou Airport,LZO,28.8528,105.393
+China,Liuzhou Airport,LZH,24.2078,109.391
+China,Linyi Airport,LYI,35.1667,118.3
+China,Lianyungang Airport,LYG,34.5719,118.874
+China,Luoyang Airport,LYA,34.7414,112.389
+China,Lhasa Airport,LXA,29.5255,91.0025
+China,Dehong Airport,LUM,24.4014,98.5322
+China,Lincang Airport,LNJ,23.7389,100.025
+China,Yongzhou Airport,LLF,26.7008,111.957
+China,Lijiang Airport,LJG,26.6794,100.246
+China,Longyan Airport,LCX,25.6742,116.746
+China,Guilin Airport,KWL,25.2181,110.039
+China,Guiyang Airport,KWE,26.6477,106.63
+China,Karamay Airport,KRY,45.5714,84.8942
+China,Korla Airport,KRL,41.6992,86.1303
+China,Ganzhou Airport,KOW,25.8264,114.912
+China,Kunming Airport,KMG,24.9922,102.744
+China,Nanchang Airport,KHN,28.8639,115.902
+China,Kashi Airport,KHG,39.5425,76.02
+China,Kuqa Airport,KCA,41.7181,82.9867
+China,Jiuzhaigou Airport,JZH,32.8567,103.683
+China,Quzhou Airport,JUZ,28.9678,118.901
+China,Jinzhou Airport,JNZ,41.1025,121.062
+China,Jining Airport,JNG,35.4167,116.533
+China,Jiamusi Airport,JMU,46.8433,130.465
+China,Quanzhou Airport,JJN,24.9,118.583
+China,Jinghong Airport,JHG,21.9739,100.76
+China,Ji'an Airport,JGS,26.8664,114.738
+China,Jiayuguan Airport,JGN,39.8572,98.3414
+China,Jingdezhen Airport,JDZ,29.3392,117.176
+China,Qingyang Airport,IQN,35.7997,107.603
+China,Yinchuan Airport,INC,38.4933,106.012
+China,Liping Airport,HZH,26.335,109.15
+China,Hanzhong Airport,HZG,33.0636,107.008
+China,Taizhou Airport,HYN,28.5653,121.43
+China,Hotan Airport,HTN,37.0381,79.865
+China,Zhoushan Airport,HSN,29.9347,122.362
+China,Harbin Airport,HRB,45.6233,126.25
+China,Hami Airport,HMI,42.4833,93.5056
+China,Ulanhot Airport,HLH,46.1947,122.008
+China,Hailar Airport,HLD,49.205,119.825
+China,Huaihua Airport,HJJ,27.4414,109.7
+China,Hangzhou Airport,HGH,30.2294,120.434
+China,Hefei Airport,HFE,31.78,117.298
+China,Hohhot Airport,HET,40.8514,111.824
+China,Heihe Airport,HEK,50.1717,127.309
+China,Haikou Airport,HAK,19.9385,110.462
+China,Guangyuan Airport,GYS,32.39,105.693
+China,Golmud Airport,GOQ,36.4025,94.8989
+China,Fuyang Airport,FUG,32.8667,115.7
+China,Fuzhou Airport,FOC,25.935,119.663
+China,Yan'an Airport,ENY,36.6367,109.553
+China,Enshi Airport,ENH,30.3211,109.485
+China,Zhangjiajie Airport,DYG,29.1028,110.446
+China,Dongsheng Airport,DSN,39.8294,109.976
+China,Dongying Airport,DOY,37.5078,118.789
+China,Dunhuang Airport,DNH,40.0922,94.6817
+China,Dali Airport,DLU,25.6503,100.319
+China,Dalian Airport,DLC,38.9656,121.539
+China,Shangri-La Airport,DIG,27.7917,99.6781
+China,Dandong Airport,DDG,40.0256,124.287
+China,Dazhou Airport,DAX,31.1319,107.431
+China,Datong Airport,DAT,39.7189,113.146
+China,Changzhou Airport,CZX,31.9194,119.778
+China,Changsha Airport,CSX,28.1833,113.217
+China,Chongqing Airport,CKG,29.7194,106.642
+China,Changzhi Airport,CIH,36.2475,113.126
+China,Chifeng Airport,CIF,42.2358,118.908
+China,Changchun Airport,CGQ,43.8171,125.324
+China,Zhengzhou Airport,CGO,34.5194,113.841
+China,Changde Airport,CGD,28.9197,111.54
+China,Baoshan Airport,BSD,25.0533,99.1686
+China,Qamdo Airport,BPX,30.5536,97.1086
+China,Beihai Airport,BHY,21.5394,109.294
+China,Baotou Airport,BAV,40.5606,109.996
+China,Anshun Airport,AVA,26.2572,105.873
+China,Anqing Airport,AQG,30.5825,117.05
+China,Aksu Airport,AKU,41.2628,80.2919
+China,Xingyi Airport,ACX,25.0856,104.959
+China,Altay Airport,AAT,47.7569,88.0739
+China,Xi'an Airport,XIY,34.4472,108.752
+China,Lanzhou Airport,LHW,36.515,103.62
+China,Hong Kong Airport,HKG,22.3081,113.918
+Cambodia,Svay Rieng Airport,SVR,11.0878,105.801
+Cambodia,Siem Reap Airport,REP,13.4106,103.813
+Cambodia,Phnom Penh Airport,PNH,11.5467,104.844
+Cambodia,Sihanoukville Airport,KOS,10.58,103.64
+Brunei,Bandar Seri Begawan Airport,BWN,4.94417,114.928
+Bhutan,Tashigang Airport,YON,27.2563,91.5145
+Bhutan,Gelephu Airport,GLU,26.8888,90.4585
+Bhutan,Jakar Airport,BUT,27.5641,90.7453
+Bhutan,Paro Airport,PBH,27.4031,89.4247
+Bangladesh,Barisal Airport,BZL,22.8001,90.3012
+Bangladesh,Saidpur Airport,SPD,25.7592,88.9086
+Bangladesh,Jessore Airport,JSR,23.1839,89.1608
