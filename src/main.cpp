@@ -5,8 +5,6 @@
 #endif
 
 
-#include "timers.hpp"
-
 #include "graph.h"
 #include "file.h"
 #include "renderers.hpp"
@@ -130,10 +128,6 @@ int main() {
 
     // cost of the returned path
     uint32_t cost = 0;
-
-    //Log file setup
-    std::ofstream log_file("log_file.log", std::ios::app | std::ios::out);
-    //log_file << LOG_FILE_DATE_TIME;
 
     Context::init();
     ImGui::StyleColorsDark();
@@ -292,9 +286,6 @@ int main() {
     Timer f_timer;
     f_timer.reset();
 
-    //Timer purpose analyzer
-    Analyzer alz = MAKE_ANALYZER(General_Analyzer);
-
 
 #ifdef  NDEBUG
     //Loading time
@@ -307,24 +298,40 @@ int main() {
         if (loading) {
             if (f_time > load_time)
                 loading = false;
+
+            int windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize |
+                ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground;
+            Context::init_rendering(Color::gray);
+
+            ImGui::Begin("Loading Message", NULL, windowFlags);
+            // imgui uses top left as (0,0)
+            glm::vec2 pos = Context::get_real_dim();
+            ImGui::SetWindowFontScale(3);
+            float msg_len = ImGui::CalcTextSize("LOADING...").x;
+            ImGui::SetWindowPos({ (pos.x - msg_len) * 0.5f, pos.y * 0.8f });
+            ImGui::Text("LOADING...");
+            ImGui::End();
+
+            ImGui::Begin("Title message", NULL, windowFlags);
+            // imgui uses top left as (0,0)
+            ImGui::SetWindowFontScale(3);
+            msg_len = ImGui::CalcTextSize("Tree of Flight").x;
+            ImGui::SetWindowPos({ (pos.x - msg_len) * 0.5f, pos.y * 0.3f });
+            ImGui::Text("Tree of Flight");
+            ImGui::End();
+
+
+
             float diag_len = glm::length(Context::get_real_dim());
             float ratio = Context::get_real_dim().x / (fly_tex.width * 10.f);
             diag_len -= fly_tex.width * ratio;
             float curr_len = fly_tex.width * ratio * 0.5 + diag_len * f_time / load_time;
-            Context::init_rendering(Color::blackOlive);
             Context::Rectangle{
                 .center = glm::normalize(Context::get_real_dim()) * curr_len,
                 .size = glm::vec2{fly_tex.width,fly_tex.height}*ratio,
                 .color = Color::white,
                 .rotate = atan2f(Context::get_real_dim().y,Context::get_real_dim().x)
             }.draw(fly_tex);
-            int windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove; 
-            ImGui::Begin("", NULL, windowFlags);
-            // imgui uses top left as (0,0)
-            glm::vec2 pos = Context::get_real_dim() * glm::vec2{ 0.33f,0.66f };
-            ImGui::SetWindowPos({ pos.x, pos.y });
-            ImGui::Text("LOADING..."); 
-            ImGui::End();
             Context::finish_rendering();
             continue;
         }
@@ -669,11 +676,8 @@ int main() {
 
         Context::finish_rendering();
 
-        alz.loop();
 
     }
-
-    log_file << alz;
 
     Context::clean();
     return 0;
