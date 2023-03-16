@@ -322,10 +322,6 @@ struct LinkedList{
 
 
 
-    ListNode<T> * iterate(int n){
-
-    }
-
     ListNode<T> *iterate(){
         if (!iterator){
             iterator = head;

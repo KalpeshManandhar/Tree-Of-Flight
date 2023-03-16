@@ -1,5 +1,5 @@
 #ifdef NDEBUG 
-#ifdef _WIN32 || _WIN64 
+#ifdef _WIN32
 #define main WinMain
 #endif
 #endif
@@ -158,6 +158,7 @@ int main() {
     const char *heuristicOptions[] = {"Zero", "Euclidean distance", "Manhattan distance"};
     int constraintSelected = 0;
     const char *constraintOptions[] = {"Random cost","Min flights","Min distance travelled", "Cheapest path"};
+    const char *pathCostPrefix, *pathcostSuffix;
     
     
 
@@ -451,6 +452,15 @@ int main() {
                     }
                 }
 
+                
+                switch (constraintSelected){
+                    case 0: pathCostPrefix = " ";   pathcostSuffix = " ";        break;
+                    case 1: pathCostPrefix = " ";   pathcostSuffix = "flights";  break;
+                    case 2: pathCostPrefix = " ";   pathcostSuffix = "km";       break;
+                    case 3: pathCostPrefix = "Rs";  pathcostSuffix = " ";        break;
+                    default:    break;
+                }
+
                 // calc cost based on algo selected
                 switch (algoSelected){
                 case 0:     cost = ports.Dijkstra(start, end, &path);           break;
@@ -469,7 +479,10 @@ int main() {
                 ImGui::Text("Time taken to find path: %0.4lf ms", timediff*1000);
                 ImGui::NewLine();
                 ImGui::SetWindowFontScale(1.8);
-                ImGui::Text("Path cost: \t %u",cost);
+                
+                
+
+                ImGui::Text("Path cost: \t %s %u %s",pathCostPrefix,cost,pathcostSuffix);
                 
                 if(!path.edges.isEmpty()){
                     int tableFlags = ImGuiTableFlags_PadOuterX|ImGuiTableFlags_Borders|ImGuiTableFlags_SizingFixedFit|ImGuiTableFlags_RowBg;
@@ -670,7 +683,7 @@ int main() {
     COST CALCULATION FUNCTIONS
 */
 uint32_t Euclidean(Node*start, Node*end){
-    return((uint32_t)glm::distance(start->data.pos, end->data.pos));
+    return((uint32_t)glm::distance(start->data.pos, end->data.pos)*110);
 }
 
 uint32_t TaxiCab(Node*start, Node*end){
