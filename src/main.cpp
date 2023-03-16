@@ -158,7 +158,7 @@ int main() {
     const char *heuristicOptions[] = {"Zero", "Euclidean distance", "Manhattan distance"};
     int constraintSelected = 0;
     const char *constraintOptions[] = {"Random cost","Min flights","Min distance travelled", "Cheapest path"};
-    const char *pathCostPrefix, *pathcostSuffix;
+    const char *pathCostPrefix=NULL, *pathcostSuffix=NULL;
     
     
 
