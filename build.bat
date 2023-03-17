@@ -19,6 +19,6 @@ set SOURCES=%SRC%\*.cpp %IMGUI_DIR%\*.cpp %GLAD_DIR%\glad\glad.c
 
 mkdir %OUTPUT_DIR%
 
-clang++ -std=c++20 -DNDEBUG %INCLUDES% %LIBS% %SOURCES% -o %OUTPUT_DIR%\%OUTPUT% %LINKS% -Xlinker /subsystem:windows
+clang++ -std=c++20 -DNDEBUG %INCLUDES% %LIBS% %SOURCES% -o %OUTPUT_DIR%\%OUTPUT% %LINKS% -Xlinker /subsystem:windows -Ofast
 
 copy %GLFW_DIR%\x64\glfw3.dll %OUTPUT_DIR%\
